@@ -5,23 +5,11 @@
 #include <string>
 #include <vector>
 
-class Statement
-    : public Node
-{
-public:
-    virtual ~Statement() {}
-
-    virtual std::string getType() const
-    {
-        return "Statement";
-    }
-};
-
 class CompoundStatement
-    : public Statement
+    : public Root
 {
 private:
-    const NodePtr stat_list;
+    Node *stat_list;
 
 public:
     virtual ~CompoundStatement()
@@ -31,20 +19,20 @@ public:
     CompoundStatement()
         : stat_list(NULL) {}
 
-    CompoundStatement(const Node *_stat_list)
+    CompoundStatement(Node *_stat_list)
         : stat_list(_stat_list) {}
 
-    virtual std::string getType() const
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        return "CompoundStatement";
+        stat_list->Compile(dst, local);
     }
 };
 
 class StatementList
-    : public Statement
+    : public Root
 {
 private:
-    mutable std::vector<const Node *> stat;
+    std::vector<Node *> stat;
 
 public:
     virtual ~StatementList() {}
@@ -54,28 +42,31 @@ public:
         stat = {};
     }
 
-    StatementList(const NodePtr _stat)
+    StatementList(Node *_stat)
     {
         stat.clear();
         stat.push_back(_stat);
     }
 
-    void AddStatement(const NodePtr _stat)
+    void AddStatement(Node *_stat)
     {
         stat.push_back(_stat);
     }
 
-    virtual std::string getType() const
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        return "StatementList";
+        for (uint32_t i = 1; i < stat.size(); i++)
+        {
+            stat.at(i)->Compile(dst, local);
+        }
     }
 };
 
 class ReturnStatement
-    : public Statement
+    : public Root
 {
 private:
-    NodePtr expr;
+    Node *expr;
 
 public:
     virtual ~ReturnStatement()
@@ -86,12 +77,17 @@ public:
     ReturnStatement()
         : expr(NULL) {}
 
-    ReturnStatement(NodePtr _expr)
+    ReturnStatement(Node *_expr)
         : expr(_expr) {}
 
-    std::string getType() const override
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        return "ReturnStatement";
+        dst << "li $2,10" << std::endl;
+        dst << "move $sp,$fp" << std::endl;
+        dst << "lw $fp,28($sp)" << std::endl;
+        dst << "addiu $sp,$sp, 32" << std::endl;
+        dst << "j $31" << std::endl;
+        dst << "nop";
     }
 };
 

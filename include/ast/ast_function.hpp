@@ -8,37 +8,29 @@
 #include <vector>
 
 class Function
-    : public Node
+    : public Root
 {
-private:
+public:
     std::string type;
     std::string name;
-    const NodePtr CompoundStatement;
+    Node *CompoundStatement;
 
-public:
     virtual ~Function()
     {
         delete CompoundStatement;
     }
 
-    Function(std::string _type, std::string _name, const NodePtr _CompoundStatement)
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << ".globl " << name << std::endl;
+        dst << name << ":" << std::endl;
+        dst << "addiu $sp,$sp,-32" << std::endl;
+        dst << "sw $fp,28($sp)" << std::endl;
+        dst << "move $fp,$sp" << std::endl;
+        CompoundStatement->Compile(dst, local);
+    }
+    Function(std::string _type, std::string _name, Node *_CompoundStatement)
         : type(_type), name(_name), CompoundStatement(_CompoundStatement) {}
-
-    std::string
-    gettype() const
-    {
-        return type;
-    }
-
-    std::string getname() const
-    {
-        return name;
-    }
-
-    std::string getType() const override
-    {
-        return "Function";
-    }
 };
 
 #endif

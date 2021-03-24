@@ -6,35 +6,30 @@
 #include <cmath>
 
 class Expression
-    : public Node
+    : public Root
 {
 private:
-    NodePtr expr;
+    Node *expr;
 
 public:
     virtual ~Expression()
     {
         delete expr;
     }
-    Expression(NodePtr _expr)
+    Expression(Node *_expr)
         : expr(_expr)
     {
     }
     Expression() {}
 
-    const NodePtr getexpr()
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        return expr;
-    }
-
-    virtual std::string getType() const override
-    {
-        return "Expression";
+        expr->Compile(dst, local);
     }
 };
 
 class Constant
-    : public Expression
+    : public Root
 {
 private:
     double value;
@@ -42,16 +37,12 @@ private:
 public:
     ~Constant() {}
 
-    virtual std::string getType() const override
-    {
-        return "constant";
-    }
     Constant(double _value)
         : value(_value) {}
 
-    double getvalue()
+    void Compile(std::ostream &dst, Context *local)
     {
-        return value;
+        dst << "li $2, " << value << std::endl;
     }
 };
 

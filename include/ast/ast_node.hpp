@@ -11,37 +11,58 @@ class Node;
 
 typedef const Node *NodePtr;
 
+struct Context
+{
+    std::map<std::string, int> params;
+    int offset;
+};
+
+typedef std::vector<Context *> Scope;
+
 class Node
 {
 public:
-    mutable std::vector<const Node *> functions;
+    virtual ~Node() {}
+    Node() {}
+    virtual void Compile(std::ostream &dst, Context *local) = 0;
+    virtual void Compile(std::ostream &dst) = 0;
+};
 
+class Root
+    : public Node
+{
 public:
-    virtual ~Node()
-    {
-        functions.clear();
-    }
-    Node()
+    std::vector<Node *> functions;
+    Scope local;
+
+    virtual ~Root() {}
+
+    Root()
     {
         functions = {};
+        local = {};
     }
 
-    Node(const Node *_function)
+    Root(Node *_function)
     {
         functions.push_back(_function);
+        local.push_back(new Context);
     }
 
-    void Compile(std::ostream &dst) {}
+    void AddFunction(Node *_function)
+    {
+        functions.push_back(_function);
+        local.push_back(new Context);
+    };
 
-    void Addfunction(const Node *function)
+    void Compile(std::ostream &dst)
     {
-        functions.push_back(function);
+        for (uint32_t i = 0; i < functions.size(); i++)
+        {
+            functions.at(i)->Compile(dst, local.at(i));
+        }
     }
-    //! tells Codegen what this node is
-    virtual std::string getType() const
-    {
-        return "Root";
-    }
+    virtual void Compile(std::ostream &dst, Context *local) {}
 };
 
 #endif
