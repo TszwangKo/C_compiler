@@ -46,4 +46,16 @@ public:
     }
 };
 
+class Variable
+    : public Root
+{
+private:
+    std::string name;
+
+public:
+    virtual ~Variable() {}
+    Variable(std::string _name)
+        : name(_name) {}
+};
+
 #endif

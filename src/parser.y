@@ -3,8 +3,7 @@
 
   #include <cassert>
 
-  extern const Node *g_root; // A way of getting the AST out
-  StatementList* stmt_list = new StatementList();
+  extern Node *g_root; // A way of getting the AST out
 
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
@@ -15,6 +14,7 @@
 
 %union{
      Node* node;
+	 StatementList* statement;
      std::string *string;
      double number;
 }
@@ -39,8 +39,9 @@
 %type<node> compound_statement
 %type<string> type_specifier direct_declarator 
 
-%type<statement> statement_list statement
-%type<statement> jump_statement
+%type<statement> statement_list 
+%type<node> statement
+%type<node> jump_statement
 %type<node> expression
 
 %type<number> CONSTANT
@@ -86,8 +87,8 @@ compound_statement
 
 
 statement_list
-	: statement     { stmt_list->AddStatement($1);}
-	| statement_list statement { $$ = $$->AddStatement($2); }
+	: statement     { $$ = new StatementList($1); }
+	| statement_list statement { $$->AddStatement($2); }
 	;
 
 jump_statement
@@ -101,7 +102,7 @@ expression
 
 %%
 
-const Node *g_root;
+Node *g_root;
 
 extern const Node *parseAST()
 {

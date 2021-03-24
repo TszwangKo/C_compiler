@@ -48,9 +48,10 @@ public:
         stat.push_back(_stat);
     }
 
-    void AddStatement(Node *_stat)
+    StatementList *AddStatement(Node *_stat)
     {
         stat.push_back(_stat);
+        return this;
     }
 
     virtual void Compile(std::ostream &dst, Context *local) override
@@ -87,7 +88,7 @@ public:
         dst << "lw $fp,28($sp)" << std::endl;
         dst << "addiu $sp,$sp, 32" << std::endl;
         dst << "j $31" << std::endl;
-        dst << "nop";
+        dst << "nop" << std::endl;
     }
 };
 
