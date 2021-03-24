@@ -1,10 +1,17 @@
 #include "ast.hpp"
 #include <iostream>
-
-void compile(NodePtr g_root)
+#include <vector>
+#
+void compile(std::ostream &dst, const NodePtr nd)
 {
-    if (g_root->getType() == "root")
+    if (nd->getType() == "Root")
     {
-        std::cout << "Root";
+        for (int i = 0; i < nd->functions.size(); i++)
+        {
+            compile(nd->functions.at(i));
+        }
+    }
+    else if (nd->getType() == "Function")
+    {
     }
 }

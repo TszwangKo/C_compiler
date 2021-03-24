@@ -14,40 +14,31 @@ typedef const Node *NodePtr;
 class Node
 {
 public:
-    virtual ~Node()
-    {
-    }
-
-    //! Tell Codegen what node this code is
-    virtual std::string getType() const = 0;
-};
-
-class Root : public Node
-{
-private:
     mutable std::vector<const Node *> functions;
 
 public:
-    virtual ~Root()
+    virtual ~Node()
     {
         functions.clear();
     }
-    Root()
+    Node()
     {
         functions = {};
     }
 
-    Root(const Node *_function)
+    Node(const Node *_function)
     {
         functions.push_back(_function);
     }
+
+    void Compile(std::ostream &dst) {}
 
     void Addfunction(const Node *function)
     {
         functions.push_back(function);
     }
-
-    std::string getType() const override
+    //! tells Codegen what this node is
+    virtual std::string getType() const
     {
         return "Root";
     }
