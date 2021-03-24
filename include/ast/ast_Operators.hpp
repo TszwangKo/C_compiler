@@ -3,15 +3,16 @@
 
 #include "ast_node.hpp"
 #include "ast_expression.hpp"
+
 class Operator
     : public Expression
 {
 private:
-    ExpressionPtr left;
-    ExpressionPtr right;
+    Expression *left;
+    Expression *right;
 
 protected:
-    Operator(ExpressionPtr _left, ExpressionPtr _right)
+    Operator(Expression *_left, Expression *_right)
         : left(_left), right(_right)
     {
     }
@@ -25,25 +26,19 @@ public:
 
     virtual const char *getOpcode() const = 0;
 
-    ExpressionPtr getLeft() const
+    Expression *getLeft() const
     {
         return left;
     }
 
-    ExpressionPtr getRight() const
+    Expression *getRight() const
     {
         return right;
     }
 
-    virtual void print(std::ostream &dst) const override
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        dst << "( ";
-        left->print(dst);
-        dst << " ";
-        dst << getOpcode();
-        dst << " ";
-        right->print(dst);
-        dst << " )";
+        dst << "#---Operator---#" << std::endl;
     }
 };
 
@@ -57,18 +52,17 @@ protected:
     }
 
 public:
-    AddOperator(ExpressionPtr _left, ExpressionPtr _right)
+    AddOperator(Expression *_left, Expression *_right)
         : Operator(_left, _right)
     {
     }
 
-    virtual double evaluate(
-        const std::map<std::string, double> &bindings) const override
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        // TODO-C : Run bin/eval_expr with something like 5+a, where a=10, to make sure you understand how this works
-        double vl = getLeft()->evaluate(bindings);
-        double vr = getRight()->evaluate(bindings);
-        return vl + vr;
+        getLeft()->Compile(dst, local);
+        dst << "move $t0, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "addu $v0, $t0, $v0" << std::endl;
     }
 };
 
@@ -82,19 +76,17 @@ protected:
     }
 
 public:
-    SubOperator(ExpressionPtr _left, ExpressionPtr _right)
+    SubOperator(Expression *_left, Expression *_right)
         : Operator(_left, _right)
     {
     }
 
-    virtual double evaluate(
-        const std::map<std::string, double> &bindings) const override
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        // TODO-D : Implement this, based on AddOperator::evaluate
-        // throw std::runtime_error("MulOperator::evaluate is not implemented.");
-        double vl = getLeft()->evaluate(bindings);
-        double vr = getRight()->evaluate(bindings);
-        return vl - vr;
+        getLeft()->Compile(dst, local);
+        dst << "move $t0, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "subu $v0, $t0, $v0" << std::endl;
     }
 };
 
@@ -108,18 +100,17 @@ protected:
     }
 
 public:
-    MulOperator(ExpressionPtr _left, ExpressionPtr _right)
+    MulOperator(Expression *_left, Expression *_right)
         : Operator(_left, _right)
     {
     }
 
-    virtual double evaluate(
-        const std::map<std::string, double> &bindings) const override
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        // throw std::runtime_error("MulOperator::evaluate is not implemented.");
-        double vl = getLeft()->evaluate(bindings);
-        double vr = getRight()->evaluate(bindings);
-        return vl * vr;
+        getLeft()->Compile(dst, local);
+        dst << "move $t0, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "mul $v0, $t0, $v0" << std::endl;
     }
 };
 
@@ -133,43 +124,43 @@ protected:
     }
 
 public:
-    DivOperator(ExpressionPtr _left, ExpressionPtr _right)
+    DivOperator(Expression *_left, Expression *_right)
         : Operator(_left, _right)
     {
     }
 
-    virtual double evaluate(
-        const std::map<std::string, double> &bindings) const override
+    virtual void Compile(std::ostream &dst, Context *local) override
     {
-        //throw std::runtime_error("DivOperator::evaluate is not implemented.");
-        double vl = getLeft()->evaluate(bindings);
-        double vr = getRight()->evaluate(bindings);
-        return vl / vr;
+        getLeft()->Compile(dst, local);
+        dst << "move $t0, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "div $t0, $v0" << std::endl;
+        dst << "mflo $v0" << std::endl;
     }
 };
 
-class ExpOperator
-    : public Operator
-{
-protected:
-    virtual const char *getOpcode() const override
-    {
-        return "^";
-    }
+// class ExpOperator
+//     : public Operator
+// {
+// protected:
+//     virtual const char *getOpcode() const override
+//     {
+//         return "^";
+//     }
 
-public:
-    ExpOperator(ExpressionPtr _left, ExpressionPtr _right)
-        : Operator(_left, _right)
-    {
-    }
+// public:
+//     ExpOperator(Expression *_left, Expression *_right)
+//         : Operator(_left, _right)
+//     {
+//     }
 
-    virtual double evaluate(
-        const std::map<std::string, double> &bindings) const override
-    {
-        double vl = getLeft()->evaluate(bindings);
-        double vr = getRight()->evaluate(bindings);
-        return pow(vl, vr);
-    }
-};
+//     virtual double evaluate(
+//         const std::map<std::string, double> &bindings) const override
+//     {
+//         double vl = getLeft()->evaluate(bindings);
+//         double vr = getRight()->evaluate(bindings);
+//         return pow(vl, vr);
+//     }
+// };
 
 #endif

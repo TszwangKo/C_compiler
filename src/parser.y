@@ -4,7 +4,7 @@
   #include <cassert>
 
   extern Node *g_root; // A way of getting the AST out
-
+  
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
   // that Bison generated code can call them.
@@ -15,6 +15,7 @@
 %union{
      Node* node;
 	 StatementList* statement;
+	 Expression* expression;
      std::string *string;
      double number;
 }
@@ -42,7 +43,8 @@
 %type<statement> statement_list 
 %type<node> statement
 %type<node> jump_statement
-%type<node> expression
+%type<expression> expression additive_expression 
+
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -55,7 +57,7 @@
 
 
 external_declaration
-	: function_definition	{std::cout << "assigend" << std::endl;  g_root = new Root($1); $$ = g_root; }
+	: function_definition	{  g_root = new Root($1); $$ = g_root; }
 	;
 
 function_definition
@@ -63,8 +65,8 @@ function_definition
 	;
 
 type_specifier
-	: VOID
-	| INT   
+	: VOID	{ $$ = new std::string("void");}
+	| INT   { $$ = new std::string("int");}
 	;
 
 direct_declarator
@@ -93,7 +95,13 @@ jump_statement
 	;
 
 expression
-    : CONSTANT { $$ = new Constant($1); } 
+    : additive_expression { $$ = new Expression($1); }
+	;
+
+additive_expression
+	: CONSTANT { $$ = new Constant($1); }
+	| additive_expression '+' CONSTANT { Expression * tmp = new Constant($3); $$ = new AddOperator($1,tmp);}
+	| additive_expression '-' CONSTANT { Expression * tmp = new Constant($3); $$ = new SubOperator($1,tmp);}
 	;
 
 
@@ -103,6 +111,7 @@ Node *g_root;
  
 Node *parseAST()
 {
+  yydebug = 1;
   g_root=0;
   std::cout << " Been here \n\n";
   yyparse();

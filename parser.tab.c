@@ -97,12 +97,12 @@ extern int yydebug;
   #include <cassert>
 
   extern Node *g_root; // A way of getting the AST out
-
+  
   //! This is to fix problems when generating C++
   // We are declaring the functions provided by Flex, so
   // that Bison generated code can call them.
   int yylex(void);
-  extern void yyerror(const char *);
+  void yyerror(const char *);
 
 #line 108 "parser.tab.c" /* yacc.c:355  */
 
@@ -1299,7 +1299,7 @@ yyreduce:
     {
         case 2:
 #line 58 "./src/parser.y" /* yacc.c:1646  */
-    { g_root = new Root((yyvsp[0].node)); (yyval.node) = g_root; }
+    {std::cout << "assigend" << std::endl;  g_root = new Root((yyvsp[0].node)); (yyval.node) = g_root; }
 #line 1304 "parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1584,8 +1584,8 @@ yyreturn:
 
 
 Node *g_root;
-
-extern Node *parseAST()
+ 
+Node *parseAST()
 {
   g_root=0;
   std::cout << " Been here \n\n";

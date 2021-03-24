@@ -1,3 +1,4 @@
 #!/bin/bash
 echo "Compiling to MIPS..."
-cat $2 | ./bin/compiler 2> /dev/null 1> $4
+echo "compiler_test/basic/basic.c" | ./bin/compiler 1> $4
+echo "compiler_test/basic/basic.c"

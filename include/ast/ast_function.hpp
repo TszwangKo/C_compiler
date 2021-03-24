@@ -23,6 +23,7 @@ public:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         dst << ".globl " << name << std::endl;
+        dst << "#-------fucntion def----------#" << std::endl;
         dst << name << ":" << std::endl;
         dst << "addiu $sp,$sp,-32" << std::endl;
         dst << "sw $fp,28($sp)" << std::endl;

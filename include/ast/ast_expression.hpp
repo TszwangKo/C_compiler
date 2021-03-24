@@ -29,7 +29,7 @@ public:
 };
 
 class Constant
-    : public Root
+    : public Expression
 {
 private:
     double value;
@@ -47,7 +47,7 @@ public:
 };
 
 class Variable
-    : public Root
+    : public Expression
 {
 private:
     std::string name;

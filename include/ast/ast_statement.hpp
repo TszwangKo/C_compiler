@@ -24,6 +24,7 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
+        dst << "#--------CompoundStatement----------#" << std::endl;
         stat_list->Compile(dst, local);
     }
 };
@@ -56,7 +57,8 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        for (uint32_t i = 1; i < stat.size(); i++)
+        dst << "#-----Statement_list-----#" << std::endl;
+        for (uint32_t i = 0; i < stat.size(); i++)
         {
             stat.at(i)->Compile(dst, local);
         }
@@ -83,7 +85,7 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        dst << "li $2,10" << std::endl;
+        expr->Compile(dst, local);
         dst << "move $sp,$fp" << std::endl;
         dst << "lw $fp,28($sp)" << std::endl;
         dst << "addiu $sp,$sp, 32" << std::endl;

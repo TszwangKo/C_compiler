@@ -4,11 +4,12 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <iostream>
 
 #include "ast/ast_node.hpp"
 #include "ast/ast_expression.hpp"
 // #include "ast/ast_primitives.hpp"
-// #include "ast/ast_operators.hpp"
+#include "ast/ast_operators.hpp"
 // #include "ast/ast_unary.hpp"
 #include "ast/ast_statement.hpp"
 #include "ast/ast_function.hpp"

@@ -1,11 +1,12 @@
 %option noyywrap
+%option yylineno
 
 %{
 extern "C" int fileno(FILE *stream);
-
 #include <stdio.h>
 #include <iostream>
 #include "parser.tab.hpp"
+#include <string>
 %}
 
 D			[0-9]
@@ -34,7 +35,7 @@ IS			(u|U|l|L)*
 "for"			{   return(FOR); }
 "goto"			{   return(GOTO); }
 "if"			{   return(IF); }
-"int"			{   return(INT); std::cout << "lexed " << std::endl; }
+"int"			{   return(INT); }
 "long"			{   return(LONG); }
 "register"		{   return(REGISTER); }
 "return"		{   return(RETURN); }
@@ -51,16 +52,16 @@ IS			(u|U|l|L)*
 "volatile"		{   return(VOLATILE); }
 "while"			{   return(WHILE); }
 
-{L}({L}|{D})*		{   return(*yytext); }
+{L}({L}|{D})*		{ yylval.string = new std::string(yytext);  return(IDENTIFIER); }
 
-0[xX]{H}+{IS}?		{   return(CONSTANT); }
-0{D}+{IS}?		{   return(CONSTANT); }
-{D}+{IS}?		{   return(CONSTANT); }
-L?'(\\.|[^\\'])+'	{   return(CONSTANT); }
+0[xX]{H}+{IS}?		{ yylval.number = stod(std::string(yytext)); return(CONSTANT); }
+0{D}+{IS}?		{ yylval.number = stod(std::string(yytext)); return(CONSTANT); }
+{D}+{IS}?		{ yylval.number = stod(std::string(yytext)); return(CONSTANT); }
+L?'(\\.|[^\\'])+'	{  yylval.number = stod(std::string(yytext)); return(CONSTANT); }
 
-{D}+{E}{FS}?		{   return(CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{   return(CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{   return(CONSTANT); }
+{D}+{E}{FS}?		{   yylval.number = stod(std::string(yytext)); return(CONSTANT); }
+{D}*"."{D}+({E})?{FS}?	{  yylval.number = stod(std::string(yytext)); return(CONSTANT); }
+{D}+"."{D}*({E})?{FS}?	{  yylval.number = stod(std::string(yytext)); return(CONSTANT); }
 
 L?\"(\\.|[^\\"])*\"	{   return(STRING_LITERAL); }
 
