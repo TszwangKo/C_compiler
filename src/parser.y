@@ -14,8 +14,7 @@
 }
 
 %union{
-     const Node* node;
-     const StatementList* statement;
+     Node* node;
      std::string *string;
      double number;
 }
@@ -53,7 +52,7 @@
 %%
 
 translation_unit
-	: external_declaration  { g_root = new Root(); $$ = g_root; $1 = $$; }
+	: external_declaration  { $$ = g_root; $1 = $$; }
 	| translation_unit external_declaration
 	;
 
@@ -96,8 +95,8 @@ jump_statement
 	;
 
 expression
-        : CONSTANT { $$ = new Constant($1); } 
-        ;
+    : CONSTANT { $$ = new Constant($1); } 
+	;
 
 
 %%
