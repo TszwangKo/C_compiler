@@ -1,0 +1,360 @@
+Terminals unused in grammar
+
+   STRING_LITERAL
+   SIZEOF
+   PTR_OP
+   INC_OP
+   DEC_OP
+   LEFT_OP
+   RIGHT_OP
+   LE_OP
+   GE_OP
+   EQ_OP
+   NE_OP
+   AND_OP
+   OR_OP
+   MUL_ASSIGN
+   DIV_ASSIGN
+   MOD_ASSIGN
+   ADD_ASSIGN
+   SUB_ASSIGN
+   LEFT_ASSIGN
+   RIGHT_ASSIGN
+   AND_ASSIGN
+   XOR_ASSIGN
+   OR_ASSIGN
+   TYPE_NAME
+   TYPEDEF
+   EXTERN
+   STATIC
+   AUTO
+   REGISTER
+   CHAR
+   SHORT
+   LONG
+   SIGNED
+   UNSIGNED
+   FLOAT
+   DOUBLE
+   CONST
+   VOLATILE
+   STRUCT
+   UNION
+   ENUM
+   ELLIPSIS
+   CASE
+   DEFAULT
+   IF
+   ELSE
+   SWITCH
+   WHILE
+   DO
+   FOR
+   GOTO
+   CONTINUE
+   BREAK
+
+
+Grammar
+
+    0 $accept: external_declaration $end
+
+    1 external_declaration: function_definition
+
+    2 function_definition: type_specifier direct_declarator compound_statement
+
+    3 type_specifier: VOID
+    4               | INT
+
+    5 direct_declarator: IDENTIFIER
+    6                  | direct_declarator '(' ')'
+
+    7 statement: jump_statement
+
+    8 compound_statement: '{' '}'
+    9                   | '{' statement_list '}'
+
+   10 statement_list: statement
+   11               | statement_list statement
+
+   12 jump_statement: RETURN expression ';'
+
+   13 expression: CONSTANT
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 6
+')' (41) 6
+';' (59) 12
+'{' (123) 8 9
+'}' (125) 8 9
+error (256)
+IDENTIFIER (258) 5
+CONSTANT (259) 13
+STRING_LITERAL (260)
+SIZEOF (261)
+PTR_OP (262)
+INC_OP (263)
+DEC_OP (264)
+LEFT_OP (265)
+RIGHT_OP (266)
+LE_OP (267)
+GE_OP (268)
+EQ_OP (269)
+NE_OP (270)
+AND_OP (271)
+OR_OP (272)
+MUL_ASSIGN (273)
+DIV_ASSIGN (274)
+MOD_ASSIGN (275)
+ADD_ASSIGN (276)
+SUB_ASSIGN (277)
+LEFT_ASSIGN (278)
+RIGHT_ASSIGN (279)
+AND_ASSIGN (280)
+XOR_ASSIGN (281)
+OR_ASSIGN (282)
+TYPE_NAME (283)
+TYPEDEF (284)
+EXTERN (285)
+STATIC (286)
+AUTO (287)
+REGISTER (288)
+CHAR (289)
+SHORT (290)
+INT (291) 4
+LONG (292)
+SIGNED (293)
+UNSIGNED (294)
+FLOAT (295)
+DOUBLE (296)
+CONST (297)
+VOLATILE (298)
+VOID (299) 3
+STRUCT (300)
+UNION (301)
+ENUM (302)
+ELLIPSIS (303)
+CASE (304)
+DEFAULT (305)
+IF (306)
+ELSE (307)
+SWITCH (308)
+WHILE (309)
+DO (310)
+FOR (311)
+GOTO (312)
+CONTINUE (313)
+BREAK (314)
+RETURN (315) 12
+
+
+Nonterminals, with rules where they appear
+
+$accept (66)
+    on left: 0
+external_declaration (67)
+    on left: 1, on right: 0
+function_definition (68)
+    on left: 2, on right: 1
+type_specifier (69)
+    on left: 3 4, on right: 2
+direct_declarator (70)
+    on left: 5 6, on right: 2 6
+statement (71)
+    on left: 7, on right: 10 11
+compound_statement (72)
+    on left: 8 9, on right: 2
+statement_list (73)
+    on left: 10 11, on right: 9 11
+jump_statement (74)
+    on left: 12, on right: 7
+expression (75)
+    on left: 13, on right: 12
+
+
+State 0
+
+    0 $accept: . external_declaration $end
+
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    external_declaration  go to state 3
+    function_definition   go to state 4
+    type_specifier        go to state 5
+
+
+State 1
+
+    4 type_specifier: INT .
+
+    $default  reduce using rule 4 (type_specifier)
+
+
+State 2
+
+    3 type_specifier: VOID .
+
+    $default  reduce using rule 3 (type_specifier)
+
+
+State 3
+
+    0 $accept: external_declaration . $end
+
+    $end  shift, and go to state 6
+
+
+State 4
+
+    1 external_declaration: function_definition .
+
+    $default  reduce using rule 1 (external_declaration)
+
+
+State 5
+
+    2 function_definition: type_specifier . direct_declarator compound_statement
+
+    IDENTIFIER  shift, and go to state 7
+
+    direct_declarator  go to state 8
+
+
+State 6
+
+    0 $accept: external_declaration $end .
+
+    $default  accept
+
+
+State 7
+
+    5 direct_declarator: IDENTIFIER .
+
+    $default  reduce using rule 5 (direct_declarator)
+
+
+State 8
+
+    2 function_definition: type_specifier direct_declarator . compound_statement
+    6 direct_declarator: direct_declarator . '(' ')'
+
+    '('  shift, and go to state 9
+    '{'  shift, and go to state 10
+
+    compound_statement  go to state 11
+
+
+State 9
+
+    6 direct_declarator: direct_declarator '(' . ')'
+
+    ')'  shift, and go to state 12
+
+
+State 10
+
+    8 compound_statement: '{' . '}'
+    9                   | '{' . statement_list '}'
+
+    RETURN  shift, and go to state 13
+    '}'     shift, and go to state 14
+
+    statement       go to state 15
+    statement_list  go to state 16
+    jump_statement  go to state 17
+
+
+State 11
+
+    2 function_definition: type_specifier direct_declarator compound_statement .
+
+    $default  reduce using rule 2 (function_definition)
+
+
+State 12
+
+    6 direct_declarator: direct_declarator '(' ')' .
+
+    $default  reduce using rule 6 (direct_declarator)
+
+
+State 13
+
+   12 jump_statement: RETURN . expression ';'
+
+    CONSTANT  shift, and go to state 18
+
+    expression  go to state 19
+
+
+State 14
+
+    8 compound_statement: '{' '}' .
+
+    $default  reduce using rule 8 (compound_statement)
+
+
+State 15
+
+   10 statement_list: statement .
+
+    $default  reduce using rule 10 (statement_list)
+
+
+State 16
+
+    9 compound_statement: '{' statement_list . '}'
+   11 statement_list: statement_list . statement
+
+    RETURN  shift, and go to state 13
+    '}'     shift, and go to state 20
+
+    statement       go to state 21
+    jump_statement  go to state 17
+
+
+State 17
+
+    7 statement: jump_statement .
+
+    $default  reduce using rule 7 (statement)
+
+
+State 18
+
+   13 expression: CONSTANT .
+
+    $default  reduce using rule 13 (expression)
+
+
+State 19
+
+   12 jump_statement: RETURN expression . ';'
+
+    ';'  shift, and go to state 22
+
+
+State 20
+
+    9 compound_statement: '{' statement_list '}' .
+
+    $default  reduce using rule 9 (compound_statement)
+
+
+State 21
+
+   11 statement_list: statement_list statement .
+
+    $default  reduce using rule 11 (statement_list)
+
+
+State 22
+
+   12 jump_statement: RETURN expression ';' .
+
+    $default  reduce using rule 12 (jump_statement)

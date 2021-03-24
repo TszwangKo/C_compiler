@@ -1,3 +1,12 @@
+%option noyywrap
+
+%{
+extern "C" int fileno(FILE *stream);
+
+#include <stdio.h>
+#include <iostream>
+#include "parser.tab.hpp"
+%}
 
 D			[0-9]
 L			[a-zA-Z_]
@@ -5,12 +14,6 @@ H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
-
-%{
-#include <stdio.h>
-#include "parser.tab.hpp"
-
-%}
 
 %%
 "/*"			{  }
@@ -31,7 +34,7 @@ IS			(u|U|l|L)*
 "for"			{   return(FOR); }
 "goto"			{   return(GOTO); }
 "if"			{   return(IF); }
-"int"			{   return(INT); }
+"int"			{   return(INT); std::cout << "lexed " << std::endl; }
 "long"			{   return(LONG); }
 "register"		{   return(REGISTER); }
 "return"		{   return(RETURN); }
@@ -112,11 +115,6 @@ L?\"(\\.|[^\\"])*\"	{   return(STRING_LITERAL); }
 .			{ /* ignore bad characters */ }
 
 %%
-
-int yywrap()
-{
-	return(1);
-}
 
 void yyerror (char const *s)
 {

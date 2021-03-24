@@ -1,6 +1,6 @@
 %code requires{
   #include "ast.hpp"
-
+  #include <iostream>
   #include <cassert>
 
   extern Node *g_root; // A way of getting the AST out
@@ -9,7 +9,7 @@
   // We are declaring the functions provided by Flex, so
   // that Bison generated code can call them.
   int yylex(void);
-  extern void yyerror(const char *);
+  void yyerror(const char *);
 }
 
 %union{
@@ -33,7 +33,7 @@
 
 
 
-%type<node> translation_unit external_declaration
+%type<node> external_declaration
 %type<node> function_definition
 
 %type<node> compound_statement
@@ -49,16 +49,13 @@
 %type<string> INT VOID
 
 
-%start translation_unit
+%start external_declaration
+
 %%
 
-translation_unit
-	: external_declaration  { $$ = g_root; $1 = $$; }
-	| translation_unit external_declaration
-	;
 
 external_declaration
-	: function_definition   { $$ = new Root($1); }
+	: function_definition	{std::cout << "assigend" << std::endl;  g_root = new Root($1); $$ = g_root; }
 	;
 
 function_definition
@@ -71,7 +68,7 @@ type_specifier
 	;
 
 direct_declarator
-	: IDENTIFIER    
+	: IDENTIFIER  
 	| direct_declarator '(' ')' { $$ = $1; }
 	;
 
@@ -103,11 +100,13 @@ expression
 %%
 
 Node *g_root;
-
-extern const Node *parseAST()
+ 
+Node *parseAST()
 {
   g_root=0;
+  std::cout << " Been here \n\n";
   yyparse();
+  std::cout << "parsed" << std::endl;
   return g_root;
 }
 

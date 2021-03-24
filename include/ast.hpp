@@ -13,11 +13,7 @@
 #include "ast/ast_statement.hpp"
 #include "ast/ast_function.hpp"
 
-
-extern const Node *parseAST();
-
-
-
+extern Node *parseAST();
 
 // /* ======================    Defining Node    ======================= */
 // class Node;
@@ -31,7 +27,7 @@ extern const Node *parseAST();
 // {
 
 // public:
-     
+
 //     virtual ~Node()
 //     {
 //     }
@@ -50,8 +46,6 @@ extern const Node *parseAST();
 //     }
 // };
 
-
-
 // /* ======================  Defining Function  ======================= */
 // class Function : public Node
 // {
@@ -66,7 +60,7 @@ extern const Node *parseAST();
 //     {
 //     }
 //     virtual ~Function(){}
-    
+
 //     std::string getType() const override
 //     {
 //         return "Function";
@@ -76,10 +70,10 @@ extern const Node *parseAST();
 // class List: public Node{
 //     protected:
 //     mutable std::vector<const Node *> children;
-    
+
 //     public:
 //     List(std::vector<const Node *> _children): children(_children){}
-    
+
 //     ~List();
 
 //     //* Add a child;
@@ -154,7 +148,7 @@ extern const Node *parseAST();
 //     ReturnStatement(){
 //         value = 0;
 //     }
-    
+
 //     ReturnStatement(double _value)
 //         : value(_value)
 //     {
@@ -163,7 +157,7 @@ extern const Node *parseAST();
 //     {
 //         return "ReturnStatement";
 //     }
-   
+
 // };
 
 #endif
