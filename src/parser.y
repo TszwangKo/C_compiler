@@ -1,3 +1,25 @@
+%code requires{
+  #include "ast.hpp"
+
+  #include <cassert>
+
+  extern const Node *g_root; // A way of getting the AST out
+  StatementList* stmt_list = new StatementList();
+
+  //! This is to fix problems when generating C++
+  // We are declaring the functions provided by Flex, so
+  // that Bison generated code can call them.
+  int yylex(void);
+  extern void yyerror(const char *);
+}
+
+%union{
+     const Node* node;
+     const StatementList* statement;
+     std::string *string;
+     double number;
+}
+
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
@@ -10,53 +32,82 @@
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
+
+
+%type<node> translation_unit external_declaration
+%type<node> function_definition
+
+%type<node> compound_statement
+%type<string> type_specifier direct_declarator 
+
+%type<statement> statement_list statement
+%type<statement> jump_statement
+%type<node> expression
+
+%type<number> CONSTANT
+%type<string> IDENTIFIER 
+%type<string> INT VOID
+
+
 %start translation_unit
-
-
 %%
 
 translation_unit
-        : external_declaration;
-        ;
+	: external_declaration  { g_root = new Root(); $$ = g_root; $1 = $$; }
+	| translation_unit external_declaration
+	;
 
 external_declaration
-        : function_definition;
+	: function_definition   { $$ = new Root($1); }
+	;
 
-function_definition;
-        : declarator compound_statement
-        ;
+function_definition
+	: type_specifier direct_declarator compound_statement  { $$ = new Function(*$1,*$2,$3); }   
+	;
+
+type_specifier
+	: VOID
+	| INT   
+	;
+
+direct_declarator
+	: IDENTIFIER    
+	| direct_declarator '(' ')' { $$ = $1; }
+	;
+
+statement
+	: jump_statement 
+	;
+
 
 compound_statement
-        : statement_list;
-        ;
+	: '{' '}'{ $$ = new CompoundStatement(); }
+	| '{' statement_list '}' { $$ = new CompoundStatement($2); }
+	;
+
 
 statement_list
-        : statement;
-        ;
-    
-statement
-        : jump_statement;
-        ;
+	: statement     { stmt_list->AddStatement($1);}
+	| statement_list statement { $$ = $$->AddStatement($2); }
+	;
 
 jump_statement
-        : RETURN expression ';'
-        ;
+	: RETURN expression ';' { $$ = new ReturnStatement($2); }
+	;
 
 expression
-        : assignment_expression;
+        : CONSTANT { $$ = new Constant($1); } 
         ;
 
 
 %%
 
-#include <stdio.h>
+const Node *g_root;
 
-extern char yytext[];
-extern int column;
-
-yyerror(s)
-char *s;
+extern const Node *parseAST()
 {
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
+  g_root=0;
+  yyparse();
+  return g_root;
 }
+
