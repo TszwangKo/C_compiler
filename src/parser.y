@@ -43,7 +43,7 @@
 %type<statement> statement_list 
 %type<node> statement
 %type<node> jump_statement
-%type<expression> expression additive_expression 
+%type<expression> expression additive_expression multiplicative_expression
 
 
 %type<number> CONSTANT
@@ -96,12 +96,20 @@ jump_statement
 
 expression
     : additive_expression { $$ = new Expression($1); }
+	| multiplicative_expression { $$ = new Expression($1); }
 	;
+
+multiplicative_expression
+	: CONSTANT { $$ = new Constant($1); }
+	| multiplicative_expression '*' CONSTANT { Expression *tmp = new Constant($3); $$ = new MulOperator($1, tmp); }
+	| multiplicative_expression '/' CONSTANT { Expression *tmp = new Constant($3); $$ = new DivOperator($1, tmp); }
+	;
+
 
 additive_expression
 	: CONSTANT { $$ = new Constant($1); }
-	| additive_expression '+' CONSTANT { Expression * tmp = new Constant($3); $$ = new AddOperator($1,tmp);}
-	| additive_expression '-' CONSTANT { Expression * tmp = new Constant($3); $$ = new SubOperator($1,tmp);}
+	| additive_expression '+' multiplicative_expression { $$ = new AddOperator($1,$3);}
+	| additive_expression '-' multiplicative_expression { $$ = new SubOperator($1,$3);}
 	;
 
 
