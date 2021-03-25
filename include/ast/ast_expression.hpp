@@ -2,8 +2,8 @@
 #define ast_expressions_hpp
 
 #include "ast_node.hpp"
-#include "<pair>"
 #include <cmath>
+#include <map>
 
 class Expression
     : public Root
@@ -123,7 +123,7 @@ public:
         {
             if (!(local->params.find(name) == local->params.end()))
             {
-                dst << "lw $2," << local->params(name) << "($sp)" << std::endl;
+                dst << "lw $2," << local->params[name] << "($sp)" << std::endl;
             }
             else
             {
