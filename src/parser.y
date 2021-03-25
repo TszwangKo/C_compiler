@@ -195,8 +195,6 @@ Node *parseAST()
 {
   yydebug = 1;
   g_root=0;
-  std::cout << " Been here \n\n";
   yyparse();
-  std::cout << "parsed" << std::endl;
   return g_root;
 }

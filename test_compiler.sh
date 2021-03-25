@@ -1,6 +1,13 @@
 #!/bin/bash
 
 FILE_DIR=$1
+COND=${2:-"null"}
+
+if [[ "${COND}" = "null" ]] 
+then
+    echo "single mode"
+fi
+
 TEST_NAME=$(basename ${FILE_DIR})
 mkdir -p output
 
@@ -32,16 +39,49 @@ if [[ "$?" -ne "0" ]]; then
 fi
 
 echo "========================================"
+if [[ "${COND}" = "2" ]]
+then
+    for i in compiler_tests/${FILE_DIR}/*_driver.c; do
+        b=$(basename ${i});
+        IFS='_'
+        read -a strarr <<< "${b}"
+        if [[ ${#strarr[*]} -eq 3 ]]
+        then 
+            c="${strarr[0]}_${strarr[1]}"
+        else
+            c="${strarr[0]}"
+        fi
+        IFS=''
 
-./bin/c_compiler -S compiler_tests/${FILE_DIR}.c -o output/${TEST_NAME}.s
-mips-linux-gnu-gcc -mfp32 -o output/${TEST_NAME}.o -c output/${TEST_NAME}.s
-mips-linux-gnu-gcc -mfp32 -static -o ./output/${TEST_NAME} ./output/${TEST_NAME}.o ./compiler_tests/${FILE_DIR}_driver.c
-qemu-mips ./output/${TEST_NAME}
-RESULT=$?
-echo "Test : $TEST_NAME"
-if [[ RESULT -ne "0" ]]; then
-    echo "RESULT: FAIL"
-    echo "OUPUT: $RESULT"
-else 
-    echo "RESULT: PASS"
+        ./bin/c_compiler -S compiler_tests/${FILE_DIR}/${c}.c -o output/${c}.s > /dev/null 2> /dev/null
+        mips-linux-gnu-gcc -mfp32 -o output/${c}.o -c output/${c}.s > /dev/null 2> /dev/null
+        mips-linux-gnu-gcc -mfp32 -static -o ./output/${c} ./output/${c}.o ./compiler_tests/${FILE_DIR}/${c}_driver.c > /dev/null 2> /dev/null
+        qemu-mips ./output/${c}
+        
+        RESULT=$?
+        echo "Test : ${c}"
+        if [[ RESULT -ne "0" ]]; then
+            echo "RESULT: FAIL"
+            echo "OUPUT: $RESULT"
+        else 
+            echo "RESULT: PASS "
+            PASSED=$(( ${PASSED}+1 ));
+        fi
+        CHECKED=$(( ${CHECKED}+1 ));
+        echo "================================"
+    done
+    echo "Passed ${PASSED} out of ${CHECKED}".
+else
+    ./bin/c_compiler -S compiler_tests/${FILE_DIR}.c -o output/${TEST_NAME}.s  2> /dev/null
+    mips-linux-gnu-gcc -mfp32 -o output/${TEST_NAME}.o -c output/${TEST_NAME}.s
+    mips-linux-gnu-gcc -mfp32 -static -o ./output/${TEST_NAME} ./output/${TEST_NAME}.o ./compiler_tests/${FILE_DIR}_driver.c
+    qemu-mips ./output/${TEST_NAME}
+    RESULT=$?
+    echo "Test : $TEST_NAME"
+    if [[ RESULT -ne "0" ]]; then
+        echo "RESULT: FAIL"
+        echo "OUPUT: $RESULT"
+    else 
+        echo "RESULT: PASS"
+    fi
 fi

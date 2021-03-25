@@ -56,7 +56,6 @@ public:
     {
         functions.push_back(_function);
         local.push_back(new Context);
-        std::cout << "root Created \n\n";
     }
 
     void AddFunction(Node *_function)
