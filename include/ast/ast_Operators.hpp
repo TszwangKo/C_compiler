@@ -162,11 +162,36 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        dst << "#---logical_or---#" << std::endl;
+        dst << "#---bitwise_or---#" << std::endl;
         getLeft()->Compile(dst, local);
         dst << "move $t2, $v0" << std::endl;
         getRight()->Compile(dst, local);
         dst << "or $v0, $t2, $v0" << std::endl;
+    }
+};
+
+class ExclusiveOrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "^";
+    }
+
+public:
+    ExclusiveOrOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---bitwise_xor---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "xor $v0, $t2, $v0" << std::endl;
     }
 };
 
@@ -187,7 +212,7 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        dst << "#---logical_and---#" << std::endl;
+        dst << "#---bitwise_and---#" << std::endl;
         getLeft()->Compile(dst, local);
         dst << "move $t2, $v0" << std::endl;
         getRight()->Compile(dst, local);

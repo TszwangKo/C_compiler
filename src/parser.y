@@ -43,8 +43,8 @@
 %type<statement> statement_list 
 %type<node> statement
 %type<node> jump_statement
-%type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression and_expression
-
+%type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
+%type<expression> and_expression exclusive_or_expression
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -113,14 +113,20 @@ additive_expression
 	| additive_expression '-' multiplicative_expression { $$ = new SubOperator($1,$3); }
 	;
 
-inclusive_or_expression
-	: and_expression
-	| inclusive_or_expression '|' and_expression { $$ = new InclusiveOrOperator($1, $3); }
-	;
-
 and_expression
 	: unary_expression
 	| and_expression '&' unary_expression  { $$ = new AndOperator($1, $3); }
+	;
+
+exclusive_or_expression
+	: and_expression
+	| exclusive_or_expression '^' and_expression  { $$ = new ExclusiveOrOperator($1, $3); }
+	;
+
+inclusive_or_expression
+	: exclusive_or_expression
+	| inclusive_or_expression '|' exclusive_or_expression { $$ = new InclusiveOrOperator($1, $3); }
+	;
 
 unary_expression
 	: CONSTANT { $$ = new Constant($1); }
