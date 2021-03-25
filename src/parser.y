@@ -42,7 +42,7 @@
 
 %type<statement> statement_list 
 %type<node> statement
-%type<node> jump_statement
+%type<node> jump_statement selection_statement
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
 %type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression 
 %type<expression> relational_expression equality_expression shift_expression logical_and_expression logical_or_expression
@@ -76,8 +76,16 @@ direct_declarator
 	| direct_declarator '(' ')' { $$ = $1; }
 	;
 
+selection_statement
+	: IF '(' expression ')' statement { $$ = new SelectionStatement($3, $5); }
+	| IF '(' expression ')' statement ELSE statement
+	;
+
 statement
-	: jump_statement 
+	: jump_statement
+	| selection_statement
+	| compound_statement
+	| 
 	;
 
 

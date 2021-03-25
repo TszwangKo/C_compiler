@@ -2,6 +2,7 @@
 #define ast_statement_hpp
 
 #include "ast_node.hpp"
+#include "ast_expression.hpp"
 #include <string>
 #include <vector>
 
@@ -91,6 +92,41 @@ public:
         dst << "addiu $sp,$sp, 32" << std::endl;
         dst << "j $31" << std::endl;
         dst << "nop" << std::endl;
+    }
+};
+
+class SelectionStatement
+    : public Root
+{
+private:
+    Expression *expr;
+    Node *statementif;
+    Node *statementelse;
+
+public:
+    virtual ~SelectionStatement()
+    {
+        delete expr;
+        delete statementif;
+        delete statementelse;
+    }
+
+    SelectionStatement()
+        : expr(NULL), statementif(NULL), statementelse(NULL) {}
+
+    SelectionStatement(Expression *_expr, Node *_statementif)
+        : expr(_expr), statementif(_statementif), statementelse(NULL) {}
+
+    SelectionStatement(Expression *_expr, Node *_statementif, Node *_statementelse)
+        : expr(_expr), statementif(_statementif), statementelse(_statementelse) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        expr->Compile(dst, local);
+        dst << "move $t7, $v0" << std::endl;
+        dst << "beq $t7, $zero, I2" << std::endl;
+        statementif->Compile(dst, local);
+        dst << "I2:" << std::endl;
     }
 };
 
