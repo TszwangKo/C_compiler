@@ -107,7 +107,7 @@ multiplicative_expression
 
 
 additive_expression
-	: CONSTANT { $$ = new Constant($1); }
+	: multiplicative_expression
 	| additive_expression '+' multiplicative_expression { $$ = new AddOperator($1,$3);}
 	| additive_expression '-' multiplicative_expression { $$ = new SubOperator($1,$3);}
 	;
