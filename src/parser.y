@@ -44,7 +44,8 @@
 %type<node> statement
 %type<node> jump_statement
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
-%type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression equality_expression
+%type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression 
+%type<expression> relational_expression equality_expression shift_expression
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -95,9 +96,7 @@ jump_statement
 	;
 
 expression
-    : additive_expression { $$ = new Expression($1); }
-	| multiplicative_expression { $$ = new Expression($1); }
-	| inclusive_or_expression { $$ = new Expression($1); }
+    : inclusive_or_expression { $$ = new Expression($1); }
 	;
 
 multiplicative_expression
@@ -113,10 +112,24 @@ additive_expression
 	| additive_expression '-' multiplicative_expression { $$ = new SubOperator($1,$3); }
 	;
 
+shift_expression
+	: additive_expression 
+	| shift_expression LEFT_OP additive_expression { $$ = new ShiftLeftOperator($1, $3); }
+	| shift_expression RIGHT_OP additive_expression { $$ = new ShiftRightOperator($1, $3); }
+	;
+
+relational_expression
+	: shift_expression
+	| relational_expression '<' shift_expression { $$ = new LessThanOperator($1, $3); }
+	| relational_expression '>' shift_expression { $$ = new GreaterThanOperator($1, $3); }
+	| relational_expression LE_OP shift_expression { $$ = new LessThanEqualOperator($1, $3); }
+	| relational_expression GE_OP shift_expression { $$ = new GreaterThanEqualOperator($1, $3); }
+	;
+
 equality_expression
-	: unary_expression
-	| equality_expression EQ_OP unary_expression { $$ = new LogicEqOperator($1, $3); }
-	| equality_expression NE_OP unary_expression { $$ = new LogicNeqOperator($1, $3); }
+	: relational_expression
+	| equality_expression EQ_OP relational_expression { $$ = new LogicEqOperator($1, $3); }
+	| equality_expression NE_OP relational_expression { $$ = new LogicNeqOperator($1, $3); }
 	;
 
 and_expression

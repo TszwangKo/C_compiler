@@ -274,6 +274,162 @@ public:
     }
 };
 
+class LessThanOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "<";
+    }
+
+public:
+    LessThanOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "slt  $v0, $t2, $v0" << std::endl;
+        dst << "andi $v0, $v0, 0x00ff" << std::endl;
+    }
+};
+
+class GreaterThanOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return ">";
+    }
+
+public:
+    GreaterThanOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "slt  $v0, $v0, $t2" << std::endl;
+        dst << "andi $v0, $v0, 0x00ff" << std::endl;
+    }
+};
+
+class LessThanEqualOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "<=";
+    }
+
+public:
+    LessThanEqualOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "slt  $v0, $t2, $v0" << std::endl;
+        dst << "xori $v0, $v0, 0x1" << std::endl;
+        dst << "andi $v0, $v0, 0x00ff" << std::endl;
+    }
+};
+
+class GreaterThanEqualOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return ">=";
+    }
+
+public:
+    GreaterThanEqualOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "slt  $v0, $v0, $t2" << std::endl;
+        dst << "xori $v0, $v0, 0x1" << std::endl;
+        dst << "andi $v0, $v0, 0x00ff" << std::endl;
+    }
+};
+
+class ShiftLeftOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "<<";
+    }
+
+public:
+    ShiftLeftOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "sll  $v0, $t2, $v0" << std::endl;
+    }
+};
+
+class ShiftRightOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "<<";
+    }
+
+public:
+    ShiftRightOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "sra  $v0, $t2, $v0" << std::endl;
+    }
+};
+
 // class ExpOperator
 //     : public Operator
 // {
