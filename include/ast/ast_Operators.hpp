@@ -117,6 +117,7 @@ public:
     }
 };
 
+
 class DivOperator
     : public Operator
 {
@@ -140,6 +141,82 @@ public:
         getRight()->Compile(dst, local);
         dst << "div $t1, $v0" << std::endl;
         dst << "mflo $v0" << std::endl;
+    }
+};
+
+
+class InclusiveOrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "|";
+    }
+
+public:
+    InclusiveOrOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---bitwise_or---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "or $v0, $t2, $v0" << std::endl;
+    }
+};
+
+class ExclusiveOrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "^";
+    }
+
+public:
+    ExclusiveOrOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---bitwise_xor---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "xor $v0, $t2, $v0" << std::endl;
+    }
+};
+
+class AndOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "&";
+    }
+
+public:
+    AndOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---bitwise_and---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "and $v0, $t2, $v0" << std::endl;
     }
 };
 
