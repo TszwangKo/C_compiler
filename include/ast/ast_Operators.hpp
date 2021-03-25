@@ -220,6 +220,60 @@ public:
     }
 };
 
+class LogicEqOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "==";
+    }
+
+public:
+    LogicEqOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "xor $v0, $t2, $v0" << std::endl;
+        dst << "sltiu  $v0, $v0, 1" << std::endl;
+        dst << "andi $v0, $v0, 0x00ff" << std::endl;
+    }
+};
+
+class LogicNeqOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "!=";
+    }
+
+public:
+    LogicNeqOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "xor $v0, $t2, $v0" << std::endl;
+        dst << "sltu  $v0, $zero, $v0" << std::endl;
+        dst << "andi $v0, $v0, 0x00ff" << std::endl;
+    }
+};
+
 // class ExpOperator
 //     : public Operator
 // {

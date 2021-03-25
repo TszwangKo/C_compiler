@@ -26,6 +26,8 @@ public:
     {
         expr->Compile(dst, local);
     }
+
+    virtual void changeSign() {}
 };
 
 class PrimaryExpression
@@ -83,6 +85,11 @@ public:
 
     Constant(double _value)
         : value(_value) {}
+
+    void changeSign()
+    {
+        value = -value;
+    }
 
     void Compile(std::ostream &dst, Context *local)
     {
