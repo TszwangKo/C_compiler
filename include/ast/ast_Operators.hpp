@@ -145,17 +145,17 @@ public:
 };
 
 
-class LogicOrOperator
+class InclusiveOrOperator
     : public Operator
 {
 protected:
     virtual const char *getOpcode() const override
     {
-        return "||";
+        return "|";
     }
 
 public:
-    LogicOrOperator(Expression *_left, Expression *_right)
+    InclusiveOrOperator(Expression *_left, Expression *_right)
         : Operator(_left, _right)
     {
     }
@@ -170,17 +170,17 @@ public:
     }
 };
 
-class LogicAndOperator
+class AndOperator
     : public Operator
 {
 protected:
     virtual const char *getOpcode() const override
     {
-        return "||";
+        return "&";
     }
 
 public:
-    LogicAndOperator(Expression *_left, Expression *_right)
+    AndOperator(Expression *_left, Expression *_right)
         : Operator(_left, _right)
     {
     }

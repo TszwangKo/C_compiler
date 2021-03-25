@@ -1,4 +1,4 @@
 int f()
 {
-    return 1 && 1;
+    return 5 & 7;
 }
