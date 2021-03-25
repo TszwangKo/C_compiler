@@ -44,7 +44,7 @@
 %type<node> statement
 %type<node> jump_statement
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
-%type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression
+%type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression equality_expression
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -113,9 +113,15 @@ additive_expression
 	| additive_expression '-' multiplicative_expression { $$ = new SubOperator($1,$3); }
 	;
 
-and_expression
+equality_expression
 	: unary_expression
-	| and_expression '&' unary_expression  { $$ = new AndOperator($1, $3); }
+	| equality_expression EQ_OP unary_expression { $$ = new LogicEqOperator($1, $3); }
+	| equality_expression NE_OP unary_expression { $$ = new LogicNeqOperator($1, $3); }
+	;
+
+and_expression
+	: equality_expression
+	| and_expression '&' equality_expression  { $$ = new AndOperator($1, $3); }
 	;
 
 exclusive_or_expression
