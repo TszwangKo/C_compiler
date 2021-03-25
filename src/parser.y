@@ -45,7 +45,8 @@
 %type<node> jump_statement
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
 %type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression 
-%type<expression> relational_expression equality_expression shift_expression
+%type<expression> relational_expression equality_expression shift_expression logical_and_expression logical_or_expression
+%type<expression> conditional_expression
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -96,7 +97,11 @@ jump_statement
 	;
 
 expression
-    : inclusive_or_expression { $$ = new Expression($1); }
+    : conditional_expression { $$ = new Expression($1); }
+	;
+
+conditional_expression
+	: logical_or_expression
 	;
 
 multiplicative_expression
@@ -145,6 +150,16 @@ exclusive_or_expression
 inclusive_or_expression
 	: exclusive_or_expression
 	| inclusive_or_expression '|' exclusive_or_expression { $$ = new InclusiveOrOperator($1, $3); }
+	;
+
+logical_and_expression
+	: inclusive_or_expression
+	| logical_and_expression AND_OP inclusive_or_expression { $$ = new LogicAndOperator($1, $3); }
+	;
+
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression OR_OP logical_and_expression { $$ = new LogicOrOperator($1, $3); }
 	;
 
 unary_expression

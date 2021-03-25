@@ -430,6 +430,75 @@ public:
     }
 };
 
+class LogicAndOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "&&";
+    }
+
+public:
+    LogicAndOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "beq  $t2, $zero, L2" << std::endl;
+        dst << "nop" << std::endl;
+        dst << "beq  $v0, $zero, L2" << std::endl;
+        dst << "nop" << std::endl;
+        dst << "li   $v0, 1" << std::endl;
+        dst << "j    L3" << std::endl;
+        dst << "nop" << std::endl;
+        dst << "L2: " << std::endl;
+        dst << "move $v0, $zero" << std::endl;
+        dst << "L3: " << std::endl;
+    }
+};
+
+class LogicOrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "||";
+    }
+
+public:
+    LogicOrOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_equal---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "bne  $t2, $zero, L2" << std::endl;
+        dst << "nop" << std::endl;
+        dst << "beq  $v0, $zero, L3" << std::endl;
+        dst << "nop" << std::endl;
+        dst << "L2:" << std::endl;
+        dst << "li   $v0, 1" << std::endl;
+        dst << "j    L4" << std::endl;
+        dst << "nop" << std::endl;
+        dst << "L3: " << std::endl;
+        dst << "move $v0, $zero" << std::endl;
+        dst << "L4: " << std::endl;
+    }
+};
+
 // class ExpOperator
 //     : public Operator
 // {
