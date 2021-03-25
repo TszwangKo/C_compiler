@@ -140,7 +140,7 @@ unary_expression
 	;
 
 primary_expression
-	: IDENTIFIER	
+	: IDENTIFIER { $$ = new Variable(*$1);}	
 	| CONSTANT { $$ = new Constant($1); }
 	;
 
