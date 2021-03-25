@@ -2,7 +2,6 @@
 #define ast_expressions_hpp
 
 #include "ast_node.hpp"
-#include "<pair>"
 #include <cmath>
 
 class Expression
@@ -26,6 +25,8 @@ public:
     {
         expr->Compile(dst, local);
     }
+
+    virtual void changeSign() {}
 };
 
 class PrimaryExpression
@@ -84,6 +85,11 @@ public:
     Constant(double _value)
         : value(_value) {}
 
+    void changeSign()
+    {
+        value = -value;
+    }
+
     void Compile(std::ostream &dst, Context *local)
     {
         dst << "li $2, " << value << std::endl;
@@ -123,7 +129,7 @@ public:
         {
             if (!(local->params.find(name) == local->params.end()))
             {
-                dst << "lw $2," << local->params(name) << "($sp)" << std::endl;
+                dst << "lw $2," << local->params[name] << "($sp)" << std::endl;
             }
             else
             {

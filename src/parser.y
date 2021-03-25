@@ -44,7 +44,7 @@
 %type<node> statement
 %type<node> jump_statement
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
-%type<expression> and_expression exclusive_or_expression
+%type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -129,10 +129,22 @@ inclusive_or_expression
 	;
 
 unary_expression
-	: CONSTANT { $$ = new Constant($1); }
-	| '-' CONSTANT { $$ = new Constant(-$2); } 
+	: postfix_expression 
+	| '-' postfix_expression { $2->changeSign(); $$ = $2; } 
 	;
 
+primary_expression
+	: IDENTIFIER	
+	| CONSTANT { $$ = new Constant($1); }
+	;
+
+postfix_expression
+	: primary_expression
+	;
+
+cast_expression
+	: unary_expression
+	;
 %%
 
 Node *g_root;
