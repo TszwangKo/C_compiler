@@ -117,6 +117,7 @@ public:
     }
 };
 
+
 class DivOperator
     : public Operator
 {
@@ -140,6 +141,57 @@ public:
         getRight()->Compile(dst, local);
         dst << "div $t1, $v0" << std::endl;
         dst << "mflo $v0" << std::endl;
+    }
+};
+
+
+class LogicOrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "||";
+    }
+
+public:
+    LogicOrOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_or---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "or $v0, $t2, $v0" << std::endl;
+    }
+};
+
+class LogicAndOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "||";
+    }
+
+public:
+    LogicAndOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---logical_and---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t2, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "and $v0, $t2, $v0" << std::endl;
     }
 };
 

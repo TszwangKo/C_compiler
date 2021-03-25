@@ -43,7 +43,7 @@
 %type<statement> statement_list 
 %type<node> statement
 %type<node> jump_statement
-%type<expression> expression additive_expression multiplicative_expression unary_expression
+%type<expression> expression additive_expression multiplicative_expression unary_expression logical_or_expression logical_and_expression
 
 
 %type<number> CONSTANT
@@ -97,6 +97,7 @@ jump_statement
 expression
     : additive_expression { $$ = new Expression($1); }
 	| multiplicative_expression { $$ = new Expression($1); }
+	| logical_or_expression { $$ = new Expression($1); }
 	;
 
 multiplicative_expression
@@ -112,11 +113,19 @@ additive_expression
 	| additive_expression '-' multiplicative_expression { $$ = new SubOperator($1,$3); }
 	;
 
+logical_or_expression
+	: logical_and_expression
+	| logical_or_expression OR_OP logical_and_expression { $$ = new LogicOrOperator($1, $3); }
+	;
+
+logical_and_expression
+	: unary_expression
+	| logical_and_expression AND_OP unary_expression  { $$ = new LogicOrOperator($1, $3); }
+
 unary_expression
 	: CONSTANT { $$ = new Constant($1); }
 	| '-' CONSTANT { $$ = new Constant(-$2); } 
 	;
-
 
 %%
 
