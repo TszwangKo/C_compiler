@@ -28,6 +28,49 @@ public:
     }
 };
 
+class PrimaryExpression
+    : public Expression
+{
+private:
+    Node *expr;
+
+public:
+    virtual ~PrimaryExpression()
+    {
+        delete expr;
+    }
+    PrimaryExpression(Node *_expr)
+        : expr(_expr) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        expr->Compile(dst, local);
+    }
+};
+
+// class AssignmentExpression
+//     : public Expression
+// {
+// private:
+//     Node *lexpr;
+//     Node *rexpr;
+
+// public:
+//     virtual ~AssignmentExpression()
+//     {
+//         delete lexpr;
+//         delete rexpr;
+//     }
+//     AssignmentExpression(Node *_lvalue, Node *_rvalue)
+//         : lvalue(_lvalue), rvalue(_rvalue) {}
+
+//     virtual void Compile(std::ostream &dst, Context *local) override
+//     {
+//         rvalue->Compile(dst, local);
+//         lvalue->Compile(dst, local);
+//     }
+// };
+
 class Constant
     : public Expression
 {

@@ -59,6 +59,7 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
+        dst << "#---Add---#" << std::endl;
         getLeft()->Compile(dst, local);
         dst << "move $t0, $v0" << std::endl;
         getRight()->Compile(dst, local);
@@ -83,6 +84,7 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
+        dst << "#---Sub---#" << std::endl;
         getLeft()->Compile(dst, local);
         dst << "move $t0, $v0" << std::endl;
         getRight()->Compile(dst, local);
@@ -107,10 +109,11 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
+        dst << "#---mult---#" << std::endl;
         getLeft()->Compile(dst, local);
-        dst << "move $t0, $v0" << std::endl;
+        dst << "move $t1, $v0" << std::endl;
         getRight()->Compile(dst, local);
-        dst << "mul $v0, $t0, $v0" << std::endl;
+        dst << "mul $v0, $t1, $v0" << std::endl;
     }
 };
 
@@ -131,10 +134,11 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
+        dst << "#---divide---#" << std::endl;
         getLeft()->Compile(dst, local);
-        dst << "move $t0, $v0" << std::endl;
+        dst << "move $t1, $v0" << std::endl;
         getRight()->Compile(dst, local);
-        dst << "div $t0, $v0" << std::endl;
+        dst << "div $t1, $v0" << std::endl;
         dst << "mflo $v0" << std::endl;
     }
 };
