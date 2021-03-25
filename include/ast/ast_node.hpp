@@ -15,6 +15,7 @@ struct Context
 {
     std::map<std::string, int> params;
     int offset;
+    bool assign;
 };
 
 typedef std::vector<Context *> Scope;
@@ -34,9 +35,17 @@ class Root
 public:
     std::vector<Node *> functions;
     Scope local;
+    unsigned count;
 
     virtual ~Root() {}
-
+    void increment()
+    {
+        count++;
+    }
+    unsigned getCount()
+    {
+        return count;
+    }
     Root()
     {
         functions = {};

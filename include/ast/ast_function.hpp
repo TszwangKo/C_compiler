@@ -22,6 +22,7 @@ public:
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
+        local->offset = 0;
         dst << ".globl " << name << std::endl;
         dst << "#-------fucntion def----------#" << std::endl;
         dst << name << ":" << std::endl;

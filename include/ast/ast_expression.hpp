@@ -2,7 +2,7 @@
 #define ast_expressions_hpp
 
 #include "ast_node.hpp"
-
+#include "<pair>"
 #include <cmath>
 
 class Expression
@@ -48,28 +48,29 @@ public:
     }
 };
 
-// class AssignmentExpression
-//     : public Expression
-// {
-// private:
-//     Node *lexpr;
-//     Node *rexpr;
+class AssignmentExpression
+    : public Expression
+{
+private:
+    Node *lexpr;
+    Node *rexpr;
 
-// public:
-//     virtual ~AssignmentExpression()
-//     {
-//         delete lexpr;
-//         delete rexpr;
-//     }
-//     AssignmentExpression(Node *_lvalue, Node *_rvalue)
-//         : lvalue(_lvalue), rvalue(_rvalue) {}
+public:
+    virtual ~AssignmentExpression()
+    {
+        delete lexpr;
+        delete rexpr;
+    }
+    AssignmentExpression(Node *_lexpr, Node *_rexpr)
+        : lexpr(_lexpr), rexpr(_rexpr) {}
 
-//     virtual void Compile(std::ostream &dst, Context *local) override
-//     {
-//         rvalue->Compile(dst, local);
-//         lvalue->Compile(dst, local);
-//     }
-// };
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        local->assign = true;
+        rexpr->Compile(dst, local);
+        lexpr->Compile(dst, local);
+    }
+};
 
 class Constant
     : public Expression
@@ -99,6 +100,37 @@ public:
     virtual ~Variable() {}
     Variable(std::string _name)
         : name(_name) {}
+
+    void Compile(std::ostream &dst, Context *local)
+    {
+        if (local->assign == true)
+        {
+            if (local->params.find(name) == local->params.end())
+            {
+                // declaration
+                local->params.insert(std::pair<std::string, int>(name, local->offset));
+                local->offset += 4;
+                dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
+            }
+            else
+            {
+                // assignemnt
+                dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
+            }
+            local->assign = false;
+        }
+        else if (local->assign == false)
+        {
+            if (!(local->params.find(name) == local->params.end()))
+            {
+                dst << "lw $2," << local->params(name) << "($sp)" << std::endl;
+            }
+            else
+            {
+                std::cerr << "variable" << name << "does not exist" << std::endl;
+            }
+        }
+    }
 };
 
 #endif
