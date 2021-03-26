@@ -17,6 +17,7 @@ enum assign_type
     construct,
     assign,
     initialise,
+    function,
     param
 };
 

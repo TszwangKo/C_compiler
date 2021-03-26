@@ -15,6 +15,7 @@ public:
     std::string type;
     Node *name;
     Node *CompoundStatement;
+    std::string id;
 
     virtual ~Function()
     {
@@ -24,22 +25,16 @@ public:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         local->offset = 0;
-        int stacksize = -getCount() * 4 - 8;
-        int framePtrStore = -stacksize - 4;
-        //TODO: romove comment
-        dst << "#" << stacksize << std::endl;
-        dst << "#" << framePtrStore << std::endl;
-        //TODO: remove comment
-        dst << ".globl " << name->getName() << std::endl;
-        dst << "#-------fucntion def----------#" << std::endl;
-        dst << name->getName() << ":" << std::endl;
-        dst << "addiu $sp,$sp," << stacksize << std::endl;
-        dst << "sw $fp," << framePtrStore << "($sp)" << std::endl;
-        dst << "move $fp,$sp" << std::endl;
+        local->assign = true;
+        local->mode = assign_type::function;
+        name->Compile(dst, local);
         CompoundStatement->Compile(dst, local);
     }
     Function(std::string _type, Node *_name, Node *_CompoundStatement)
-        : type(_type), name(_name), CompoundStatement(_CompoundStatement) {}
+        : type(_type), name(_name), CompoundStatement(_CompoundStatement)
+    {
+        id = name->getName();
+    }
 };
 
 #endif

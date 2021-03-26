@@ -43,7 +43,9 @@
 %type<string> type_specifier 
 %type<node> direct_declarator
 %type<node> init_declarator
-%type<node> declaration
+%type<node> declaration parameter_declaration
+
+
 %type<statement> statement_list 
 %type<declar> declaration_list
 %type<node> statement
@@ -78,7 +80,12 @@ type_specifier
 
 direct_declarator
 	: IDENTIFIER { $$ = new Variable(*$1);}
-	| direct_declarator '(' ')' { $$ = $1; }
+	| direct_declarator '(' parameter_declaration ')' { $$ = new DirectDeclarator($1,$3);}
+	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
+	;
+
+parameter_declaration
+	: type_specifier direct_declarator { $$ = new ParameterDeclaration(*$1,$2); }
 	;
 
 selection_statement

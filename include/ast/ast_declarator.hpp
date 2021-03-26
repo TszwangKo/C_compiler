@@ -89,6 +89,48 @@ public:
     }
 };
 
+class DirectDeclarator
+    : public Root
+{
+private:
+    Node *variable;
+    Node *params_list;
+
+public:
+    virtual ~DirectDeclarator()
+    {
+        delete variable;
+        delete params_list;
+    }
+
+    virtual std::string getName() override
+    {
+        return variable->getName();
+    }
+
+    DirectDeclarator(Node *_variable)
+        : variable(_variable), params_list(NULL) {}
+
+    DirectDeclarator(Node *_declarator, Node *_params_list)
+        : variable(_declarator), params_list(_params_list) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        if (params_list != NULL)
+        {
+            variable->Compile(dst, local);
+            local->assign = true;
+            local->mode = assign_type::param;
+            params_list->Compile(dst, local);
+        }
+        else if (params_list == NULL)
+        {
+
+            variable->Compile(dst, local);
+        }
+    }
+};
+
 class InitDeclarator
     : public Root
 {
@@ -126,50 +168,56 @@ public:
         }
     }
 };
-
-// class DirectDeclarator
+// class ParameterDeclaratorList
 //     : public Root
 // {
 // private:
-//     Node *variable;
-//     Node *params_list;
+//     std::vector<Node *> param_declar;
 
 // public:
-//     virtual ~DirectDeclarator()
+//     virtual ~ParameterDeclaratorList() {}
+
+//     ParameterDeclaratorList(Node *_init_declaration)
 //     {
-//         delete variable;
-//         delete params_list;
+//         param_declar.clear();
+//         param_declar.push_back(_init_declaration);
 //     }
 
-//     virtual std::string getName() override
+//     void AddParamDeclarator(Node *_init_declaration)
 //     {
-//         return variable->getName();
+//         param_declar.push_back(_init_declaration);
 //     }
-
-//     DirectDeclarator(Node *_variable)
-//         : variable(_variable), params_list(NULL) {}
-
-//     DirectDeclarator(Node *_declarator, Node *_params_list)
-//         : variable(_declarator), params_list(_params_list) {}
 
 //     virtual void Compile(std::ostream &dst, Context *local) override
 //     {
-//         if (params_list != NULL)
+//         for (uint32_t i = 0; i < param_declar.size(); i++)
 //         {
-//             local->assign = true;
-//             local->initialise = true;
-//             local->input_param = false;
-//             variable->Compile(dst, local);
-//             local->assign = true;
-//             local->initialise = true;
-//             local->input_param = true;
-//             params_list->Compile(dst, local);
-//         }
-//         else if (params_list == NULL)
-//         {
-//             variable->Compile(dst, local);
+//             param_declar.at(i)->Compile(dst, local);
 //         }
 //     }
 // };
+
+class ParameterDeclaration
+    : public Root
+{
+private:
+    std::string type;
+    Node *declarator;
+
+public:
+    virtual ~ParameterDeclaration()
+    {
+        delete declarator;
+    }
+    ParameterDeclaration(std::string _type, Node *_declarator)
+        : type(_type), declarator(_declarator) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        local->assign = true;
+        local->mode = assign_type::param;
+        declarator->Compile(dst, local);
+    }
+};
 
 #endif
