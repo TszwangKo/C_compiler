@@ -78,7 +78,7 @@ direct_declarator
 
 selection_statement
 	: IF '(' expression ')' statement { $$ = new SelectionStatement($3, $5); }
-	| IF '(' expression ')' statement ELSE statement
+	| IF '(' expression ')' statement ELSE statement { $$ = new SelectionStatement($3, $5, $7); }
 	;
 
 statement

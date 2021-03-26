@@ -126,7 +126,14 @@ public:
         dst << "move $t7, $v0" << std::endl;
         dst << "beq $t7, $zero, I2" << std::endl;
         statementif->Compile(dst, local);
+        if (statementelse != NULL) { 
+            dst << "j   I3" << std::endl;
+        }
         dst << "I2:" << std::endl;
+        if (statementelse != NULL) {
+            statementelse->Compile(dst, local);
+            dst << "I3:" << std::endl;
+        }
     }
 };
 
