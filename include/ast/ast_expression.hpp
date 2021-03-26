@@ -180,7 +180,7 @@ public:
                 }
                 case assign_type::function:
                 {
-                    int stacksize = -getCount() * 4 - 8;
+                    int stacksize = -getCount() * 4 - 16;
                     int framePtrStore = -stacksize - 4;
                     //TODO: romove comment
                     dst << "#" << stacksize << std::endl;
@@ -196,10 +196,12 @@ public:
                 }
                 case assign_type::param:
                 {
+                    dst << "#parameter assignment" << std::endl;
                     dst << "#" << getCount() << std::endl;
+                    dst << "#" << local->offset << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
-                    dst << "sw $" << getCount() + 1 << "," << local->params[name] << "($sp)" << std::endl;
+                    dst << "sw $" << 3 + local->offset / 4 << "," << local->params[name] << "($sp)" << std::endl;
                 }
                 case assign_type::none:
                 {

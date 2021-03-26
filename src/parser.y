@@ -16,6 +16,7 @@
      Node* node;
 	 StatementList* statement;
 	 DeclarationList* declar;
+	 ParameterDeclarationList* param_declar;
 	 InitDeclaratorList* initdeclarator;
 	 Expression* expression;
      std::string *string;
@@ -44,7 +45,7 @@
 %type<node> direct_declarator
 %type<node> init_declarator
 %type<node> declaration parameter_declaration
-
+%type<param_declar> parameter_declaration_list
 
 %type<statement> statement_list 
 %type<declar> declaration_list
@@ -80,8 +81,13 @@ type_specifier
 
 direct_declarator
 	: IDENTIFIER { $$ = new Variable(*$1);}
-	| direct_declarator '(' parameter_declaration ')' { $$ = new DirectDeclarator($1,$3);}
+	| direct_declarator '(' parameter_declaration_list ')' { $$ = new DirectDeclarator($1,$3);}
 	| direct_declarator '(' ')' { $$ = new DirectDeclarator($1); }
+	;
+
+parameter_declaration_list
+	: parameter_declaration {$$ = new ParameterDeclarationList($1); }
+	| parameter_declaration_list ',' parameter_declaration {$$->AddParamDeclaration($3); }
 	;
 
 parameter_declaration
