@@ -223,6 +223,8 @@ primary_expression
 
 postfix_expression
 	: primary_expression
+	| postfix_expression INC_OP { $$ = new PostFixExpression($1, '+'); }
+	| postfix_expression DEC_OP { $$ = new PostFixExpression($1, '+'); }
 	;
 
 cast_expression

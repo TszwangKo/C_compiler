@@ -184,4 +184,28 @@ public:
     }
 };
 
+class PostFixExpression
+    : public Expression
+{
+private:
+    Node *expr;
+    char op;
+
+public:
+    virtual ~PostFixExpression()
+    {
+        delete expr;
+    }
+
+    PostFixExpression(Node *_expr, char _op)
+        : expr(_expr), op(_op) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        expr->Compile(dst, local);
+        if (op == '+') dst << "addiu   $v0, $v0, 1" << std::endl;
+        if (op == '-') dst << "addiu   $v0, $v0, -1" << std::endl;
+    }
+};
+
 #endif
