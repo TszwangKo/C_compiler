@@ -21,6 +21,15 @@ struct Context
 
 typedef std::vector<Context *> Scope;
 
+// Sets unique labels
+static int label_counter = 0;
+
+static std::string makeLC()
+{
+    label_counter++;
+    return std::to_string(label_counter);
+}
+
 class Node
 {
 public:
