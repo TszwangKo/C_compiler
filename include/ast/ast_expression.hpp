@@ -36,6 +36,7 @@ public:
         }
     }
     virtual void changeSign() {}
+    virtual void notTrue() {}
 };
 
 class PrimaryExpression
@@ -98,12 +99,18 @@ class Constant
 {
 private:
     double value;
+    bool checknot;
 
 public:
     ~Constant() {}
 
     Constant(double _value)
-        : value(_value) {}
+        : value(_value), checknot(false) {}
+
+    void notTrue()
+    {
+        checknot = true;
+    }
 
     void changeSign()
     {
@@ -113,6 +120,10 @@ public:
     void Compile(std::ostream &dst, Context *local)
     {
         dst << "li $2, " << value << std::endl;
+        if (checknot) {
+            dst << "sltu $v0, $v0, 1" << std::endl;
+            dst << "andi $v0, $v0, 0xff" << std::endl;
+        }
     }
 };
 
@@ -183,6 +194,30 @@ public:
                 std::cerr << "variable" << name << "does not exist" << std::endl;
             }
         }
+    }
+};
+
+class PostFixExpression
+    : public Expression
+{
+private:
+    Node *expr;
+    char op;
+
+public:
+    virtual ~PostFixExpression()
+    {
+        delete expr;
+    }
+
+    PostFixExpression(Node *_expr, char _op)
+        : expr(_expr), op(_op) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        expr->Compile(dst, local);
+        if (op == '+') dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression 
+        if (op == '-') dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
     }
 };
 
