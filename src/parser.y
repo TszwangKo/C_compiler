@@ -16,6 +16,7 @@
      Node* node;
 	 StatementList* statement;
 	 DeclarationList* declar;
+	 InitDeclaratorList* initdeclarator;
 	 Expression* expression;
      std::string *string;
      double number;
@@ -37,7 +38,7 @@
 
 %type<node> external_declaration
 %type<node> function_definition
-
+%type<initdeclarator> init_declarator_list;
 %type<node> compound_statement
 %type<string> type_specifier 
 %type<node> direct_declarator
@@ -109,7 +110,12 @@ declaration_list
 	;
 
 declaration
-	: type_specifier init_declarator ';' { $$ = new Declaration(*$1,$2); }
+	: type_specifier init_declarator_list ';' { $$ = new Declaration(*$1,$2); }
+	;
+
+init_declarator_list
+	: init_declarator { $$ = new InitDeclaratorList($1);}
+	| init_declarator_list ',' init_declarator { $$->AddInitDeclarator($3); }
 	;
 
 init_declarator
