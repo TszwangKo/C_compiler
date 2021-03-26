@@ -1,5 +1,5 @@
-#ifndef ast_expressions_hpp
-#define ast_expressions_hpp
+#ifndef ast_declarator_hpp
+#define ast_declarator_hpp
 
 #include "ast_node.hpp"
 #include "ast_expression.hpp"
@@ -21,14 +21,14 @@ public:
         declar.push_back(_declaration);
     }
 
-    void AddDaclaration(Node *_declaration)
+    void AddDeclaration(Node *_declaration)
     {
         declar.push_back(_declaration);
     }
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        for (uint32_t i = 0; i < decalr.size(); i++)
+        for (uint32_t i = 0; i < declar.size(); i++)
         {
             declar.at(i)->Compile(dst, local);
         }
@@ -53,9 +53,6 @@ public:
 
     Declaration(std::string _type)
         : type(_type), init_declar_list(NULL) {}
-
-    Declaration(std::string _type, Node *_init_declar_list_list)
-        : type(_type), init_declar_list(_init_declar_list) {}
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
@@ -95,11 +92,11 @@ public:
 class InitDeclarator
     : public Root
 {
-public:
+private:
     Node *declarator;
     Node *expr;
 
-private:
+public:
     virtual ~InitDeclarator()
     {
         delete declarator;
@@ -111,7 +108,8 @@ private:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         expr->Compile(dst, local);
-        dst << "move $3,$2" << std::endl;
+        // dst << "move $3,$2" << std::endl;
+        local->assign = true;
         declarator->Compile(dst, local);
     }
 };

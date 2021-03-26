@@ -1,9 +1,10 @@
-#ifndef ast_expressions_hpp
-#define ast_expressions_hpp
+#ifndef ast_expression_hpp
+#define ast_expression_hpp
 
 #include "ast_node.hpp"
 #include <cmath>
 #include <map>
+#include <string>
 
 class Expression
     : public Root
@@ -20,13 +21,19 @@ public:
         : expr(_expr)
     {
     }
-    Expression() {}
+    Expression() : expr(NULL) {}
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        expr->Compile(dst, local);
+        if (expr == NULL)
+        {
+            return;
+        }
+        else
+        {
+            expr->Compile(dst, local);
+        }
     }
-
     virtual void changeSign() {}
 };
 
@@ -66,11 +73,21 @@ public:
     AssignmentExpression(Node *_lexpr, Node *_rexpr)
         : lexpr(_lexpr), rexpr(_rexpr) {}
 
+    AssignmentExpression(Node *_lexpr)
+        : lexpr(_lexpr), rexpr(NULL) {}
+
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        local->assign = true;
-        rexpr->Compile(dst, local);
-        lexpr->Compile(dst, local);
+        if (rexpr != NULL)
+        {
+            local->assign = true;
+            rexpr->Compile(dst, local);
+            lexpr->Compile(dst, local);
+        }
+        else if (rexpr == NULL)
+        {
+            lexpr->Compile(dst, local);
+        }
     }
 };
 
@@ -108,6 +125,10 @@ public:
     Variable(std::string _name)
         : name(_name) {}
 
+    std::string getName()
+    {
+        return name;
+    }
     void Compile(std::ostream &dst, Context *local)
     {
         if (local->assign == true)

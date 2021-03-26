@@ -16,6 +16,7 @@ struct Context
     std::map<std::string, int> params;
     int offset;
     bool assign;
+    bool neg;
 };
 
 typedef std::vector<Context *> Scope;
@@ -27,6 +28,7 @@ public:
     Node() {}
     virtual void Compile(std::ostream &dst, Context *local) = 0;
     virtual void Compile(std::ostream &dst) = 0;
+    virtual std::string getName() { return "Node"; }
 };
 
 class Root
@@ -62,7 +64,12 @@ public:
     {
         functions.push_back(_function);
         local.push_back(new Context);
-    };
+    }
+
+    virtual std::string getName() override
+    {
+        return "root";
+    }
 
     void Compile(std::ostream &dst)
     {
