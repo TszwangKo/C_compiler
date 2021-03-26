@@ -126,7 +126,7 @@ init_declarator_list
 	;
 
 init_declarator
-	: direct_declarator { $$ = new InitDeclaratorList($1); }
+	: direct_declarator { $$ = new InitDeclarator($1); }
 	| direct_declarator '=' assignment_expression { $$ = new InitDeclarator($1,$3); }
 	;
 	
