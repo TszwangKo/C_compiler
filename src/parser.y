@@ -16,6 +16,7 @@
      Node* node;
 	 StatementList* statement;
 	 DeclarationList* declar;
+	 ArgumentExpressionList* arg_expr;
 	 ParameterDeclarationList* param_declar;
 	 InitDeclaratorList* initdeclarator;
 	 Expression* expression;
@@ -46,6 +47,7 @@
 %type<node> init_declarator
 %type<node> declaration parameter_declaration
 %type<param_declar> parameter_declaration_list
+%type<arg_expr> argument_expression_list
 
 %type<statement> statement_list 
 %type<declar> declaration_list
@@ -241,8 +243,13 @@ postfix_expression
 	| postfix_expression INC_OP { $$ = new PostFixExpression($1, '+'); }
 	| postfix_expression DEC_OP { $$ = new PostFixExpression($1, '-'); }
 	| postfix_expression '(' ')' { $$ = new PostFixExpression($1, 'f'); }
+	| postfix_expression '(' argument_expression_list ')' { $$ = new PostFixExpression($1,$3,'p'); }
 	;
 
+argument_expression_list
+	: expression {$$ = new ArgumentExpressionList($1);}
+	| argument_expression_list ',' expression {$$->AddAssignmentExpr($3);}
+	;
 cast_expression
 	: unary_expression
 	;

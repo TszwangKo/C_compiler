@@ -27,6 +27,7 @@ struct Context
     std::map<std::string, int> params;
     int offset;
     bool assign;
+    int param_index;
     assign_type mode;
     bool neg;
 };
@@ -44,11 +45,19 @@ static std::string makeLC()
 
 class Node
 {
+private:
+    Node *root;
+
 public:
     virtual ~Node() {}
     Node() {}
-    virtual void Compile(std::ostream &dst, Context *local) = 0;
-    virtual void Compile(std::ostream &dst) = 0;
+    Node(Node *_root)
+        : root(_root) {}
+    virtual void Compile(std::ostream &dst, Context *local)
+    {
+        root->Compile(dst, local);
+    }
+    virtual void Compile(std::ostream &dst) {}
     virtual std::string getName() { return "Node"; }
 };
 static unsigned *Count = new unsigned(0);

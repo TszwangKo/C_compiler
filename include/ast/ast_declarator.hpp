@@ -192,6 +192,7 @@ public:
     {
         for (uint32_t i = 0; i < param_declar.size(); i++)
         {
+            local->param_index = i;
             param_declar.at(i)->Compile(dst, local);
         }
     }

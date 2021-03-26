@@ -133,13 +133,14 @@ class Variable
 {
 private:
     std::string name;
+    bool sign;
 
 public:
     virtual ~Variable() {}
     Variable(std::string _name)
-        : name(_name)
+        : name(_name), sign(false)
     {
-        std::cout << "Variable added\n";
+        // std::cout << "Variable added\n";
         IncrementCount();
         std::cout << getCount() << std::endl;
     }
@@ -149,6 +150,12 @@ public:
         return name;
     }
 
+    void changeSign()
+    {
+        // std::cout << "#sign changed" << sign << std::endl;
+        sign = true;
+        // std::cout << "#sign changed" << sign << std::endl;
+    }
     void Compile(std::ostream &dst, Context *local)
     {
         if (local->assign == true)
@@ -160,7 +167,7 @@ public:
                 {
                 case assign_type::construct:
                 {
-                    dst << "#" << getCount() << std::endl;
+                    // dst << "#" << getCount() << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
                     dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
@@ -168,7 +175,7 @@ public:
                 }
                 case assign_type::initialise:
                 {
-                    dst << "#" << getCount() << std::endl;
+                    // dst << "#" << getCount() << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
                     break;
@@ -201,7 +208,7 @@ public:
                     dst << "#" << local->offset << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
-                    dst << "sw $" << 3 + local->offset / 4 << "," << local->params[name] << "($sp)" << std::endl;
+                    dst << "sw $" << local->param_index + 4 << "," << local->params[name] << "($sp)" << std::endl;
                     break;
                 }
                 case assign_type::call:
@@ -229,7 +236,16 @@ public:
         {
             if (!(local->params.find(name) == local->params.end()))
             {
+                // dst << "#variabel loaded" << std::endl;
                 dst << "lw $2," << local->params[name] << "($sp)" << std::endl;
+                // dst << "#sign " << sign << std::endl;
+                if (sign == 1)
+                {
+                    // dst << "#sign " << sign << std::endl;
+                    dst << "nop" << std::endl;
+                    dst << "subu $2,$0,$2" << std::endl;
+                }
+                sign = false;
             }
             else
             {
@@ -244,6 +260,7 @@ class PostFixExpression
 {
 private:
     Node *expr;
+    Node *args;
     char op;
 
 public:
@@ -253,20 +270,66 @@ public:
     }
 
     PostFixExpression(Node *_expr, char _op)
-        : expr(_expr), op(_op) {}
+        : expr(_expr), args(NULL), op(_op) {}
+
+    PostFixExpression(Node *_expr, Node *_args, char _op)
+        : expr(_expr), args(_args), op(_op) {}
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        expr->Compile(dst, local);
-        if (op == '+')
-            dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression
-        else if (op == '-')
-            dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
-        else if (op == 'f')
+        if (args == NULL)
         {
-            local->assign = true;
-            local->mode = assign_type::call;
             expr->Compile(dst, local);
+            if (op == '+')
+                dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression
+            else if (op == '-')
+                dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
+            else if (op == 'f')
+            {
+                local->assign = true;
+                local->mode = assign_type::call;
+                expr->Compile(dst, local);
+            }
+        }
+        else
+        {
+            if (op == 'p')
+            {
+                args->Compile(dst, local);
+                local->assign = true;
+                local->mode = assign_type::call;
+                expr->Compile(dst, local);
+            }
+        }
+    }
+};
+
+class ArgumentExpressionList
+    : public Expression
+{
+private:
+    std::vector<Node *> asssign_expr;
+
+public:
+    virtual ~ArgumentExpressionList() {}
+
+    ArgumentExpressionList(Node *_asssign_expr)
+    {
+        asssign_expr.clear();
+        asssign_expr.push_back(_asssign_expr);
+    }
+
+    void AddAssignmentExpr(Node *_asssign_expr)
+    {
+        asssign_expr.push_back(_asssign_expr);
+    }
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        for (uint32_t i = 0; i < asssign_expr.size(); i++)
+        {
+            asssign_expr.at(i)->Compile(dst, local);
+            dst << "move $" << i + 4 << ",$2" << std::endl;
         }
     }
 };
