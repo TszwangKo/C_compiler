@@ -140,13 +140,27 @@ public:
     {
         if (local->assign == true)
         {
+
             if (local->params.find(name) == local->params.end())
             {
                 // declaration
-                dst << "#" << getCount() << std::endl;
-                local->params.insert(std::pair<std::string, int>(name, local->offset));
-                local->offset += 4;
-                dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
+                if (local->initialise == false)
+                {
+                    dst << "#" << getCount() << std::endl;
+                    local->params.insert(std::pair<std::string, int>(name, local->offset));
+                    local->offset += 4;
+                    dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
+                }
+                else if ((local->initialise == true))
+                {
+                    dst << "#" << getCount() << std::endl;
+                    local->params.insert(std::pair<std::string, int>(name, local->offset));
+                    local->offset += 4;
+                }
+                else
+                {
+                    dst << "unknown state in var" << std::endl;
+                }
             }
             else
             {
@@ -154,6 +168,7 @@ public:
                 dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
             }
             local->assign = false;
+            local->initialise = false;
         }
         else if (local->assign == false)
         {

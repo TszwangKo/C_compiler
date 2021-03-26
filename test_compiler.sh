@@ -45,9 +45,13 @@ then
         b=$(basename ${i});
         IFS='_'
         read -a strarr <<< "${b}"
+        
         if [[ ${#strarr[*]} -eq 3 ]]
         then 
             c="${strarr[0]}_${strarr[1]}"
+        elif [[ ${#strarr[*]} -eq 4 ]]
+        then
+            c="${strarr[0]}_${strarr[1]}_${strarr[2]}"
         else
             c="${strarr[0]}"
         fi

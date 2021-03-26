@@ -102,15 +102,28 @@ public:
         delete declarator;
         delete expr;
     }
+    InitDeclarator(Node *_declarator)
+        : declarator(_declarator), expr(NULL) {}
+
     InitDeclarator(Node *_declarator, Node *_expr)
         : declarator(_declarator), expr(_expr) {}
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
-        expr->Compile(dst, local);
-        // dst << "move $3,$2" << std::endl;
-        local->assign = true;
-        declarator->Compile(dst, local);
+        if (expr != NULL)
+        {
+            expr->Compile(dst, local);
+            // dst << "move $3,$2" << std::endl;
+            local->initialise = false;
+            local->assign = true;
+            declarator->Compile(dst, local);
+        }
+        else if (expr == NULL)
+        {
+            local->initialise = true;
+            local->assign = true;
+            declarator->Compile(dst, local);
+        }
     }
 };
 

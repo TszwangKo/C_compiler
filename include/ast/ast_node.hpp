@@ -16,6 +16,7 @@ struct Context
     std::map<std::string, int> params;
     int offset;
     bool assign;
+    bool initialise;
     bool neg;
 };
 
