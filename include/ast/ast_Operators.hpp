@@ -144,6 +144,30 @@ public:
     }
 };
 
+class ModuloOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    {
+        return "%";
+    }
+
+public:
+    ModuloOperator(Expression *_left, Expression *_right)
+        : Operator(_left, _right)
+    {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "#---modulo---#" << std::endl;
+        getLeft()->Compile(dst, local);
+        dst << "move $t1, $v0" << std::endl;
+        getRight()->Compile(dst, local);
+        dst << "div $t1, $v0" << std::endl;
+        dst << "mfhi $v0" << std::endl;
+    }
+};
 
 class InclusiveOrOperator
     : public Operator
