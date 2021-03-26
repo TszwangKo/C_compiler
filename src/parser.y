@@ -105,6 +105,7 @@ expression_statement
 compound_statement
 	: '{' '}'{ $$ = new CompoundStatement(); }
 	| '{' statement_list '}' { $$ = new CompoundStatement($2); }
+	| '{' declaration_list '}' { $$ = new CompoundStatement($2); }
 	| '{' declaration_list statement_list '}' { $$ = new CompoundStatement($2,$3);}
 	;
 
