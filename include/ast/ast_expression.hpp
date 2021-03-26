@@ -203,8 +203,8 @@ public:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         expr->Compile(dst, local);
-        if (op == '+') dst << "addiu   $v0, $v0, 1" << std::endl;
-        if (op == '-') dst << "addiu   $v0, $v0, -1" << std::endl;
+        if (op == '+') dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression 
+        if (op == '-') dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
     }
 };
 
