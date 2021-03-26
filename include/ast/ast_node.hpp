@@ -11,12 +11,21 @@ class Node;
 
 typedef const Node *NodePtr;
 
+enum assign_type
+{
+    none,
+    construct,
+    assign,
+    initialise,
+    param
+};
+
 struct Context
 {
     std::map<std::string, int> params;
     int offset;
     bool assign;
-    bool initialise;
+    assign_type mode;
     bool neg;
 };
 

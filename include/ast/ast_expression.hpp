@@ -83,6 +83,7 @@ public:
         {
             rexpr->Compile(dst, local);
             local->assign = true;
+            local->mode = assign_type::assign;
             lexpr->Compile(dst, local);
         }
         else if (rexpr == NULL)
@@ -140,26 +141,27 @@ public:
     {
         if (local->assign == true)
         {
-
             if (local->params.find(name) == local->params.end())
             {
                 // declaration
-                if (local->initialise == false)
+                switch (local->mode)
                 {
+                case assign_type::construct:
                     dst << "#" << getCount() << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
                     dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
-                }
-                else if ((local->initialise == true))
-                {
+                    break;
+                case assign_type::initialise:
                     dst << "#" << getCount() << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
-                }
-                else
-                {
-                    dst << "unknown state in var" << std::endl;
+                    break;
+                case assign_type::assign:
+                    dst << "### wrong assignment mode" << std::endl;
+                    break;
+                case assign_type::none:
+                    dst << "##############none, need instruction" << std::endl;
                 }
             }
             else
@@ -168,7 +170,7 @@ public:
                 dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
             }
             local->assign = false;
-            local->initialise = false;
+            local->mode = assign_type::none;
         }
         else if (local->assign == false)
         {

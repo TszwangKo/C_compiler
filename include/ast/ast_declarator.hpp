@@ -114,17 +114,62 @@ public:
         {
             expr->Compile(dst, local);
             // dst << "move $3,$2" << std::endl;
-            local->initialise = false;
+            local->mode = assign_type::construct;
             local->assign = true;
             declarator->Compile(dst, local);
         }
         else if (expr == NULL)
         {
-            local->initialise = true;
+            local->mode = assign_type::initialise;
             local->assign = true;
             declarator->Compile(dst, local);
         }
     }
 };
+
+// class DirectDeclarator
+//     : public Root
+// {
+// private:
+//     Node *variable;
+//     Node *params_list;
+
+// public:
+//     virtual ~DirectDeclarator()
+//     {
+//         delete variable;
+//         delete params_list;
+//     }
+
+//     virtual std::string getName() override
+//     {
+//         return variable->getName();
+//     }
+
+//     DirectDeclarator(Node *_variable)
+//         : variable(_variable), params_list(NULL) {}
+
+//     DirectDeclarator(Node *_declarator, Node *_params_list)
+//         : variable(_declarator), params_list(_params_list) {}
+
+//     virtual void Compile(std::ostream &dst, Context *local) override
+//     {
+//         if (params_list != NULL)
+//         {
+//             local->assign = true;
+//             local->initialise = true;
+//             local->input_param = false;
+//             variable->Compile(dst, local);
+//             local->assign = true;
+//             local->initialise = true;
+//             local->input_param = true;
+//             params_list->Compile(dst, local);
+//         }
+//         else if (params_list == NULL)
+//         {
+//             variable->Compile(dst, local);
+//         }
+//     }
+// };
 
 #endif
