@@ -11,6 +11,7 @@ class CompoundStatement
 {
 private:
     Node *stat_list;
+    Node *declar;
 
 public:
     virtual ~CompoundStatement()
@@ -21,11 +22,18 @@ public:
         : stat_list(NULL) {}
 
     CompoundStatement(Node *_stat_list)
-        : stat_list(_stat_list) {}
+        : stat_list(_stat_list), declar(NULL) {}
+
+    CompoundStatement(Node *_declar, Node *_stat_list)
+        : stat_list(_stat_list), declar(_declar) {}
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         dst << "#--------CompoundStatement----------#" << std::endl;
+        if (declar != NULL)
+        {
+            declar->Compile(dst, local);
+        }
         stat_list->Compile(dst, local);
     }
 };
@@ -126,11 +134,13 @@ public:
         dst << "move $t7, $v0" << std::endl;
         dst << "beq $t7, $zero, I2" << std::endl;
         statementif->Compile(dst, local);
-        if (statementelse != NULL) { 
+        if (statementelse != NULL)
+        {
             dst << "j   I3" << std::endl;
         }
         dst << "I2:" << std::endl;
-        if (statementelse != NULL) {
+        if (statementelse != NULL)
+        {
             statementelse->Compile(dst, local);
             dst << "I3:" << std::endl;
         }

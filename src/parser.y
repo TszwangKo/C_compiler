@@ -15,6 +15,7 @@
 %union{
      Node* node;
 	 StatementList* statement;
+	 DeclarationList* declar;
 	 Expression* expression;
      std::string *string;
      double number;
@@ -38,15 +39,18 @@
 %type<node> function_definition
 
 %type<node> compound_statement
-%type<string> type_specifier direct_declarator 
-
+%type<string> type_specifier 
+%type<node> direct_declarator
+%type<node> init_declarator
+%type<node> declaration
 %type<statement> statement_list 
+%type<declar> declaration_list
 %type<node> statement
-%type<node> jump_statement selection_statement
+%type<node> jump_statement selection_statement expression_statement;
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
 %type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression 
 %type<expression> relational_expression equality_expression shift_expression logical_and_expression logical_or_expression
-%type<expression> conditional_expression
+%type<expression> conditional_expression assignment_expression
 
 %type<number> CONSTANT
 %type<string> IDENTIFIER 
@@ -63,7 +67,7 @@ external_declaration
 	;
 
 function_definition
-	: type_specifier direct_declarator compound_statement  { $$ = new Function(*$1,*$2,$3); }   
+	: type_specifier direct_declarator compound_statement  { $$ = new Function(*$1,$2,$3); }   
 	;
 
 type_specifier
@@ -72,7 +76,7 @@ type_specifier
 	;
 
 direct_declarator
-	: IDENTIFIER  
+	: IDENTIFIER { $$ = new Variable(*$1);}
 	| direct_declarator '(' ')' { $$ = $1; }
 	;
 
@@ -85,13 +89,31 @@ statement
 	: jump_statement
 	| selection_statement
 	| compound_statement
-	| 
+	| expression_statement
 	;
 
+expression_statement
+	: ';' { $$ = new Expression(); }
+	| expression ';' { $$ = new Expression($1); }
+	;
 
 compound_statement
 	: '{' '}'{ $$ = new CompoundStatement(); }
 	| '{' statement_list '}' { $$ = new CompoundStatement($2); }
+	| '{' declaration_list statement_list '}' { $$ = new CompoundStatement($2,$3);}
+	;
+
+declaration_list
+	: declaration { $$ = new DeclarationList($1); }
+	| declaration_list declaration { $$->AddDeclaration($2); }
+	;
+
+declaration
+	: type_specifier init_declarator ';' { $$ = new Declaration(*$1,$2); }
+	;
+
+init_declarator
+	: direct_declarator '=' assignment_expression { $$ = new InitDeclarator($1,$3); }
 	;
 	
 
@@ -105,7 +127,12 @@ jump_statement
 	;
 
 expression
-    : conditional_expression { $$ = new Expression($1); }
+	: assignment_expression	
+	;
+
+assignment_expression
+    : conditional_expression { $$ = new AssignmentExpression($1); }
+	| unary_expression '=' assignment_expression	{ $$ = new AssignmentExpression($1,$3); }
 	;
 
 conditional_expression
