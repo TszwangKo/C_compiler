@@ -47,7 +47,7 @@
 %type<statement> statement_list 
 %type<declar> declaration_list
 %type<node> statement
-%type<node> jump_statement selection_statement expression_statement;
+%type<node> jump_statement selection_statement expression_statement iteration_statement
 %type<expression> expression additive_expression multiplicative_expression unary_expression inclusive_or_expression 
 %type<expression> and_expression exclusive_or_expression primary_expression postfix_expression cast_expression 
 %type<expression> relational_expression equality_expression shift_expression logical_and_expression logical_or_expression
@@ -91,6 +91,11 @@ statement
 	| selection_statement
 	| compound_statement
 	| expression_statement
+	| iteration_statement
+	;
+
+iteration_statement
+	: WHILE '(' expression ')' statement { $$ = new WhileLoopStatement($3, $5); }
 	;
 
 expression_statement
@@ -121,7 +126,7 @@ init_declarator_list
 init_declarator
 	: direct_declarator '=' assignment_expression { $$ = new InitDeclarator($1,$3); }
 	;
-
+	
 
 statement_list
 	: statement     { $$ = new StatementList($1); }
