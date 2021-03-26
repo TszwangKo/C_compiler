@@ -36,6 +36,7 @@ public:
         }
     }
     virtual void changeSign() {}
+    virtual void notTrue() {}
 };
 
 class PrimaryExpression
@@ -97,12 +98,18 @@ class Constant
 {
 private:
     double value;
+    bool checknot;
 
 public:
     ~Constant() {}
 
     Constant(double _value)
-        : value(_value) {}
+        : value(_value), checknot(false) {}
+
+    void notTrue()
+    {
+        checknot = true;
+    }
 
     void changeSign()
     {
@@ -112,6 +119,10 @@ public:
     void Compile(std::ostream &dst, Context *local)
     {
         dst << "li $2, " << value << std::endl;
+        if (checknot) {
+            dst << "sltu $v0, $v0, 1" << std::endl;
+            dst << "andi $v0, $v0, 0xff" << std::endl;
+        }
     }
 };
 

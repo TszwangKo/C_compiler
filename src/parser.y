@@ -214,6 +214,7 @@ logical_or_expression
 unary_expression
 	: postfix_expression 
 	| '-' postfix_expression { $2->changeSign(); $$ = $2; } 
+	| '!' postfix_expression { $2->notTrue(); $$ = $2; }
 	;
 
 primary_expression
