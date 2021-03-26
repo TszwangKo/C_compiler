@@ -202,6 +202,13 @@ public:
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
                     dst << "sw $" << 3 + local->offset / 4 << "," << local->params[name] << "($sp)" << std::endl;
+                    break;
+                }
+                case assign_type::call:
+                {
+                    dst << "jal " << name << std::endl;
+                    dst << "nop " << std::endl;
+                    break;
                 }
                 case assign_type::none:
                 {
@@ -253,8 +260,14 @@ public:
         expr->Compile(dst, local);
         if (op == '+')
             dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression
-        if (op == '-')
+        else if (op == '-')
             dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
+        else if (op == 'f')
+        {
+            local->assign = true;
+            local->mode = assign_type::call;
+            expr->Compile(dst, local);
+        }
     }
 };
 

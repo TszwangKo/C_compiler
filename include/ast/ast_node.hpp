@@ -18,6 +18,7 @@ enum assign_type
     assign,
     initialise,
     function,
+    call,
     param
 };
 
