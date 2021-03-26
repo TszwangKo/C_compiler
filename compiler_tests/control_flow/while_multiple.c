@@ -1,7 +1,6 @@
 int f()
 {
-    int x;
-    x=20;
+    int x=20;
     while(x > 10){
         x=x-1;
     }

@@ -5,6 +5,7 @@
 #include "ast_expression.hpp"
 #include <string>
 #include <vector>
+#include <iostream>
 
 class CompoundStatement
     : public Root
@@ -171,7 +172,10 @@ public:
         : expr(NULL), stat(NULL) {}
 
     WhileLoopStatement(Expression *_expr, Node *_stat)
-        : expr(_expr), stat(_stat) {}
+        : expr(_expr), stat(_stat) 
+    {
+        std::cout << "Check" << std::endl;
+    }
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {

@@ -81,8 +81,8 @@ public:
     {
         if (rexpr != NULL)
         {
-            local->assign = true;
             rexpr->Compile(dst, local);
+            local->assign = true;
             lexpr->Compile(dst, local);
         }
         else if (rexpr == NULL)
