@@ -71,6 +71,10 @@ then
         echo "================================"
     done
     echo "Passed ${PASSED} out of ${CHECKED}".
+# elif [[  "${COND}" = "c"  ]] 
+#     then
+#          ./bin/c_compiler -S compiler_tests/${FILE_DIR}.c -o output/${TEST_NAME}.s  2> /dev/null
+#          mips-linux-gnu-gcc -mfp32 -o output/${TEST_NAME}.o -c output/${TEST_NAME}.s
 else
     ./bin/c_compiler -S compiler_tests/${FILE_DIR}.c -o output/${TEST_NAME}.s  2> /dev/null
     mips-linux-gnu-gcc -mfp32 -o output/${TEST_NAME}.o -c output/${TEST_NAME}.s

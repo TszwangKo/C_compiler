@@ -5,6 +5,7 @@
 #include <cmath>
 #include <map>
 #include <string>
+#include <iostream>
 
 class Expression
     : public Root
@@ -123,12 +124,18 @@ private:
 public:
     virtual ~Variable() {}
     Variable(std::string _name)
-        : name(_name) {}
+        : name(_name)
+    {
+        std::cout << "Variable added\n";
+        IncrementCount();
+        std::cout << getCount() << std::endl;
+    }
 
     std::string getName()
     {
         return name;
     }
+
     void Compile(std::ostream &dst, Context *local)
     {
         if (local->assign == true)
@@ -136,6 +143,7 @@ public:
             if (local->params.find(name) == local->params.end())
             {
                 // declaration
+                dst << "#" << getCount() << std::endl;
                 local->params.insert(std::pair<std::string, int>(name, local->offset));
                 local->offset += 4;
                 dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
