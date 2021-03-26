@@ -193,4 +193,46 @@ public:
     }
 };
 
+class ForLoopStatement
+    : public Root
+{
+private:
+    Node *exps1;
+    Node *exps2;
+    Expression *expr;
+    Node *stat;
+
+
+public:
+    virtual ~ForLoopStatement()
+    {
+        delete exps1;
+        delete exps2;
+        delete expr;
+        delete stat;
+    }
+
+    ForLoopStatement()
+        : expr(NULL), stat(NULL) {}
+
+    ForLoopStatement(Node *_exps1, Node *_exps2, Expression *_expr, Node *_stat)
+        : exps1(_exps1), exps2(_exps2), expr(_expr), stat(_stat) 
+    {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        std::string label2 = "F" + makeLC();
+        std::string label3 = "F" + makeLC();
+        exps1->Compile(dst, local);
+        dst << "j   " << label2 << std::endl;
+        dst << label3 << ":" << std::endl;
+        stat->Compile(dst, local);
+        expr->Compile(dst, local);
+        dst << label2 << ":" << std::endl;
+        exps2->Compile(dst, local);
+        dst << "bne $v0, $zero, " << label3 << std::endl;
+        dst << "nop" << std::endl;
+    }
+};
+
 #endif

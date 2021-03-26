@@ -96,6 +96,7 @@ statement
 
 iteration_statement
 	: WHILE '(' expression ')' statement { $$ = new WhileLoopStatement($3, $5); }
+	| FOR '(' expression_statement expression_statement expression ')' statement { $$ = new ForLoopStatement($3, $4, $5, $7); }
 	;
 
 expression_statement
