@@ -99,7 +99,7 @@ public:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         expr->Compile(dst, local);
-        int returnstacksize = getCount() * 4 + 8;
+        int returnstacksize = getCount() * 4 + 16;
         int framePtrStore = returnstacksize - 4;
         dst << "move $sp,$fp" << std::endl;
         dst << "lw $fp," << framePtrStore << "($sp)" << std::endl;
@@ -162,7 +162,6 @@ private:
     Expression *expr;
     Node *stat;
 
-
 public:
     virtual ~WhileLoopStatement()
     {
@@ -174,7 +173,7 @@ public:
         : expr(NULL), stat(NULL) {}
 
     WhileLoopStatement(Expression *_expr, Node *_stat)
-        : expr(_expr), stat(_stat) 
+        : expr(_expr), stat(_stat)
     {
         std::cout << "Check" << std::endl;
     }
@@ -202,7 +201,6 @@ private:
     Expression *expr;
     Node *stat;
 
-
 public:
     virtual ~ForLoopStatement()
     {
@@ -216,8 +214,9 @@ public:
         : expr(NULL), stat(NULL) {}
 
     ForLoopStatement(Node *_exps1, Node *_exps2, Expression *_expr, Node *_stat)
-        : exps1(_exps1), exps2(_exps2), expr(_expr), stat(_stat) 
-    {}
+        : exps1(_exps1), exps2(_exps2), expr(_expr), stat(_stat)
+    {
+    }
 
     virtual void Compile(std::ostream &dst, Context *local) override
     {

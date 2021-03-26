@@ -168,34 +168,34 @@ public:
         }
     }
 };
-// class ParameterDeclaratorList
-//     : public Root
-// {
-// private:
-//     std::vector<Node *> param_declar;
+class ParameterDeclarationList
+    : public Root
+{
+private:
+    std::vector<Node *> param_declar;
 
-// public:
-//     virtual ~ParameterDeclaratorList() {}
+public:
+    virtual ~ParameterDeclarationList() {}
 
-//     ParameterDeclaratorList(Node *_init_declaration)
-//     {
-//         param_declar.clear();
-//         param_declar.push_back(_init_declaration);
-//     }
+    ParameterDeclarationList(Node *_init_declaration)
+    {
+        param_declar.clear();
+        param_declar.push_back(_init_declaration);
+    }
 
-//     void AddParamDeclarator(Node *_init_declaration)
-//     {
-//         param_declar.push_back(_init_declaration);
-//     }
+    void AddParamDeclaration(Node *_init_declaration)
+    {
+        param_declar.push_back(_init_declaration);
+    }
 
-//     virtual void Compile(std::ostream &dst, Context *local) override
-//     {
-//         for (uint32_t i = 0; i < param_declar.size(); i++)
-//         {
-//             param_declar.at(i)->Compile(dst, local);
-//         }
-//     }
-// };
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        for (uint32_t i = 0; i < param_declar.size(); i++)
+        {
+            param_declar.at(i)->Compile(dst, local);
+        }
+    }
+};
 
 class ParameterDeclaration
     : public Root
