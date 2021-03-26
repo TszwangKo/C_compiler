@@ -95,9 +95,11 @@ public:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         expr->Compile(dst, local);
+        int returnstacksize = getCount() * 4 + 8;
+        int framePtrStore = returnstacksize - 4;
         dst << "move $sp,$fp" << std::endl;
-        dst << "lw $fp,28($sp)" << std::endl;
-        dst << "addiu $sp,$sp, 32" << std::endl;
+        dst << "lw $fp," << framePtrStore << "($sp)" << std::endl;
+        dst << "addiu $sp,$sp," << returnstacksize << std::endl;
         dst << "j $31" << std::endl;
         dst << "nop" << std::endl;
     }

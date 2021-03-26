@@ -30,28 +30,30 @@ public:
     virtual void Compile(std::ostream &dst) = 0;
     virtual std::string getName() { return "Node"; }
 };
-
+static unsigned *Count = new unsigned(0);
 class Root
     : public Node
 {
 public:
     std::vector<Node *> functions;
     Scope local;
-    unsigned count;
+    unsigned *count;
 
     virtual ~Root() {}
-    void increment()
-    {
-        count++;
-    }
+
     unsigned getCount()
     {
-        return count;
+        return *count;
+    }
+    void IncrementCount()
+    {
+        (*count)++;
     }
     Root()
     {
         functions = {};
         local = {};
+        count = Count;
     }
 
     Root(Node *_function)
