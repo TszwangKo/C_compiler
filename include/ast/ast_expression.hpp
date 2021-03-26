@@ -84,6 +84,7 @@ public:
         {
             rexpr->Compile(dst, local);
             local->assign = true;
+            local->mode = assign_type::assign;
             lexpr->Compile(dst, local);
         }
         else if (rexpr == NULL)
@@ -119,7 +120,8 @@ public:
     void Compile(std::ostream &dst, Context *local)
     {
         dst << "li $2, " << value << std::endl;
-        if (checknot) {
+        if (checknot)
+        {
             dst << "sltu $v0, $v0, 1" << std::endl;
             dst << "andi $v0, $v0, 0xff" << std::endl;
         }
@@ -151,26 +153,59 @@ public:
     {
         if (local->assign == true)
         {
-
             if (local->params.find(name) == local->params.end())
             {
                 // declaration
-                if (local->initialise == false)
+                switch (local->mode)
+                {
+                case assign_type::construct:
                 {
                     dst << "#" << getCount() << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
                     dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
+                    break;
                 }
-                else if ((local->initialise == true))
+                case assign_type::initialise:
                 {
                     dst << "#" << getCount() << std::endl;
                     local->params.insert(std::pair<std::string, int>(name, local->offset));
                     local->offset += 4;
+                    break;
                 }
-                else
+                case assign_type::assign:
                 {
-                    dst << "unknown state in var" << std::endl;
+                    dst << "### wrong assignment mode" << std::endl;
+                    break;
+                }
+                case assign_type::function:
+                {
+                    int stacksize = -getCount() * 4 - 8;
+                    int framePtrStore = -stacksize - 4;
+                    //TODO: romove comment
+                    dst << "#" << stacksize << std::endl;
+                    dst << "#" << framePtrStore << std::endl;
+                    //TODO: remove comment
+                    dst << ".globl " << name << std::endl;
+                    dst << "#-------fucntion def----------#" << std::endl;
+                    dst << name << ":" << std::endl;
+                    dst << "addiu $sp,$sp," << stacksize << std::endl;
+                    dst << "sw $fp," << framePtrStore << "($sp)" << std::endl;
+                    dst << "move $fp,$sp" << std::endl;
+                    break;
+                }
+                case assign_type::param:
+                {
+                    dst << "#" << getCount() << std::endl;
+                    local->params.insert(std::pair<std::string, int>(name, local->offset));
+                    local->offset += 4;
+                    dst << "sw $" << getCount() + 1 << "," << local->params[name] << "($sp)" << std::endl;
+                }
+                case assign_type::none:
+                {
+                    dst << "##############none, need instruction" << std::endl;
+                    break;
+                }
                 }
             }
             else
@@ -179,7 +214,7 @@ public:
                 dst << "sw $2," << local->params[name] << "($sp)" << std::endl;
             }
             local->assign = false;
-            local->initialise = false;
+            local->mode = assign_type::none;
         }
         else if (local->assign == false)
         {
@@ -214,8 +249,10 @@ public:
     virtual void Compile(std::ostream &dst, Context *local) override
     {
         expr->Compile(dst, local);
-        if (op == '+') dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression 
-        if (op == '-') dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
+        if (op == '+')
+            dst << "addiu   $v0, $v0, 1" << std::endl; // Adds 1 if result there is "++" at the end of the expression
+        if (op == '-')
+            dst << "addiu   $v0, $v0, -1" << std::endl; // Subtracts 1 if result there os "--" at the end of the expression
     }
 };
 
