@@ -34,7 +34,10 @@ public:
         {
             declar->Compile(dst, local);
         }
-        stat_list->Compile(dst, local);
+        if (stat_list != NULL)
+        {
+            stat_list->Compile(dst, local);
+        }
     }
 };
 
@@ -144,6 +147,39 @@ public:
             statementelse->Compile(dst, local);
             dst << "I3:" << std::endl;
         }
+    }
+};
+
+class WhileLoopStatement
+    : public Root
+{
+private:
+    Expression *expr;
+    Node *stat;
+
+
+public:
+    virtual ~WhileLoopStatement()
+    {
+        delete expr;
+        delete stat;
+    }
+
+    WhileLoopStatement()
+        : expr(NULL), stat(NULL) {}
+
+    WhileLoopStatement(Expression *_expr, Node *_stat)
+        : expr(_expr), stat(_stat) {}
+
+    virtual void Compile(std::ostream &dst, Context *local) override
+    {
+        dst << "j   W2" << std::endl;
+        dst << "W3:" << std::endl;
+        stat->Compile(dst, local);
+        dst << "W2:" << std::endl;
+        expr->Compile(dst, local);
+        dst << "bne $v0, $zero, W3" << std::endl;
+        dst << "nop" << std::endl;
     }
 };
 
