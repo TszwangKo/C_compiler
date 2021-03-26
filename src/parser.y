@@ -170,6 +170,7 @@ multiplicative_expression
 	: unary_expression
 	| multiplicative_expression '*' unary_expression { $$ = new MulOperator($1, $3); }
 	| multiplicative_expression '/' unary_expression { $$ = new DivOperator($1, $3); }
+	| multiplicative_expression '%' unary_expression { $$ = new ModuloOperator($1, $3); }
 	;
 
 
